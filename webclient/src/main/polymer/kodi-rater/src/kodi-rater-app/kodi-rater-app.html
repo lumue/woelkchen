@@ -33,7 +33,7 @@
 				  type: String,
 				  value: function (){
 				  	const localStorageItem=localStorage.getItem("apiUrl")
-					  if(localStorageItem.isUndefined)
+					  if(localStorageItem==null)
 					  	return ""
 					  return localStorageItem
 				  },
