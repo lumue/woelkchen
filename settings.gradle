@@ -1,1 +1,6 @@
 rootProject.name = 'kodi-rate-playing'
+
+include (
+		'kodi-api-service',
+		'webclient'
+)
