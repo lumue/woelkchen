@@ -1,0 +1,18 @@
+{
+  "name": "kodi-rater",
+  "description": "rate currently playing items",
+  "main": "index.html",
+  "dependencies": {
+    "polymer": "Polymer/polymer#^2.0.0",
+    "iron-icons": "^2.1.1",
+    "paper-button": "^2.1.1",
+    "paper-icon-button": "^2.2.0",
+    "paper-styles": "^2.1.0",
+    "paper-card": "PolymerElements/paper-card#^2.1.0",
+    "sse-client": "^1.0.0"
+  },
+  "devDependencies": {
+    "web-component-tester": "Polymer/web-component-tester#^6.0.0",
+    "webcomponentsjs": "webcomponents/webcomponentsjs#^1.0.0"
+  }
+}

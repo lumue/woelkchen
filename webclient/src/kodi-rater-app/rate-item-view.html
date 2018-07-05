@@ -1,0 +1,110 @@
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../../bower_components/iron-icons/iron-icons.html">
+<link rel="import" href="../../bower_components/iron-icons/communication-icons.html">
+<link rel="import" href="../../bower_components/iron-icons/av-icons.html">
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../../bower_components/paper-styles/color.html">
+<link rel="import" href="../../bower_components/paper-styles/typography.html">
+<link rel="import" href="../../bower_components/paper-card/paper-card.html">
+
+<dom-module id="rate-item-view">
+    <template>
+        <style is="custom-style">
+            body {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+
+            paper-card {
+                max-width: 500px;
+            }
+
+            .movie-header {
+                @apply --paper-font-headline;
+            }
+
+            .movie-light {
+                color: var(--paper-grey-600);
+            }
+
+            .movie-duration {
+                float: right;
+                font-size: 15px;
+                vertical-align: middle;
+            }
+
+            .movie-rating{
+	            display: flex;
+	            flex-direction: row;
+	            margin-top: 25px;
+	            margin-bottom: 25px;
+            }
+
+            .movie-reserve {
+                color: var(--google-blue-500);
+            }
+
+            iron-icon.star {
+                --iron-icon-width: 32px;
+                --iron-icon-height: 32px;
+                color: var(--paper-amber-500);
+	            flex-grow: 1;
+            }
+
+            iron-icon.star:last-of-type {
+                color: var(--paper-grey-500);
+            }
+        </style>
+        <paper-card image="[[movie.thumbnailHttpUrl]]">
+            <div class="card-content">
+                <div class="movie-header">[[movie.title]]
+                    <div class="movie-duration movie-light">
+                        <iron-icon icon="av:av-timer"></iron-icon>
+                        <span>[[_formatDuration(movie.duration)]]</span>
+                    </div>
+                </div>
+                <div class="movie-rating">
+                    <iron-icon class="star" icon="star"></iron-icon>
+                    <iron-icon class="star" icon="star"></iron-icon>
+                    <iron-icon class="star" icon="star"></iron-icon>
+                    <iron-icon class="star" icon="star"></iron-icon>
+                    <iron-icon class="star" icon="star"></iron-icon>
+                </div>
+                <p>[[movie.tagline]]</p>
+            </div>
+        </paper-card>
+    </template>
+
+    <script>/**
+	 * @customElement
+	 * @polymer
+	 */
+	class RateItemView extends Polymer.Element {
+		static get is() {
+			return 'rate-item-view';
+		}
+
+		static get properties() {
+			return {
+				movie: {
+					type: Object,
+					value: null
+				}
+			};
+		}
+
+		_formatDuration(totalSeconds){
+
+			if(!totalSeconds)
+				return "unknown"
+
+			var date = new Date(1970,0,1);
+			date.setSeconds(totalSeconds);
+			return date.toTimeString().replace(/.*(\d{2}:\d{2}:\d{2}).*/, "$1");
+		}
+	}
+
+	window.customElements.define(RateItemView.is, RateItemView);</script>
+</dom-module>
