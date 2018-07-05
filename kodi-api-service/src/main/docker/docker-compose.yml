@@ -1,0 +1,7 @@
+server:
+  image: lumue/kodi-api-service:master-SNAPSHOT
+  restart: always
+  volumes:
+    - /data/docker-volumes/kodi-api-service:/kodi-api-service
+  ports:
+    - "7003:8003"
