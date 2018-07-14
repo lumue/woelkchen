@@ -10,10 +10,14 @@ import org.springframework.stereotype.Component;
 public class StringToJsonTransformer implements Transformer {
 	@Override
 	public Message<?> transform(Message<?> message) {
+		try{
 		String jsonString= (String) message.getPayload();
 		return MessageBuilder
 				.withPayload(new JSONObject(jsonString))
 				.copyHeadersIfAbsent(message.getHeaders())
 				.build();
+		} catch (Throwable t) {
+			return null;
+		}
 	}
 }

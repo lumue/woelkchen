@@ -9,7 +9,11 @@ import org.springframework.stereotype.Component;
 public class OnPlayEventFilter implements MessageSelector {
 	@Override
 	public boolean accept(Message<?> message) {
-		JSONObject json= (JSONObject) message.getPayload();
-		return "Player.OnPlay".equals(json.get("method"));
+		try {
+			JSONObject json = (JSONObject) message.getPayload();
+			return "Player.OnPlay".equals(json.get("method"));
+		} catch (Throwable t) {
+			return false;
+		}
 	}
 }
