@@ -17,7 +17,6 @@
 			  id="updateRatingRequest"
 			  handle-as="json"
 			  method="put"
-			  on-response="handleResponse"
 			  content-type="application/json"
 			  on-response="_handleUpdateRatingResponse"
 	  ></iron-ajax>
@@ -69,9 +68,6 @@
 		  this.currentMovie=data.detail;
 	  }
 
-	  handleResponse(response) {
-		  this.currentMovie=response.detail.response;
-	  }
 
 	  _handleRatingChanged(e) {
 		  this.$.updateRatingRequest.body=JSON.stringify(e.detail);

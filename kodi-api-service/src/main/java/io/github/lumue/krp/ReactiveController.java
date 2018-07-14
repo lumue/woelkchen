@@ -34,7 +34,7 @@ public class ReactiveController {
 	}
 	
 	@PutMapping(value = "/movies/{movieId}/rating",consumes = MediaType.APPLICATION_JSON_VALUE)
-	public Mono<Movie> setMovieRating(@PathVariable Long movieId,@RequestBody Long rating ){
+	public Mono<Void> setMovieRating(@PathVariable Long movieId,@RequestBody Long rating ){
 		return kodiMovieService.setRating(movieId,rating);
 	}
 	
