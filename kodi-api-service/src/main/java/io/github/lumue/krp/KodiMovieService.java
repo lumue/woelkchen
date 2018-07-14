@@ -32,7 +32,7 @@ public class KodiMovieService {
 	
 	private final static String GET_MOVIE_BODY="{\"jsonrpc\": \"2.0\", \"method\": \"VideoLibrary.GetMovieDetails\", \"params\": {  \"movieid\": %s ,\"properties\": [\"title\",\"runtime\",\"thumbnail\",\"tagline\",\"userrating\",\"tag\",\"dateadded\",\"lastplayed\",\"genre\",\"streamdetails\"]}, \"id\": \"MovieGetDetails\"}";
 	private final static String SET_RATING_BODY="{\"jsonrpc\": \"2.0\",\"method\": \"VideoLibrary.SetMovieDetails\",\"params\": {\"userrating\": %s,\"movieid\": %s},\t\"id\": \"MovieSetDetails\"}";
-	
+	private final static String GET_PLAYING_BODY="{\"jsonrpc\": \"2.0\",\"method\": \"Player.GetItem\",\"params\": {\t\"playerid\": 1},\t\"id\": \"VideoGetItem\"}";
 	private final WebClient kodiWebClient;
 	
 	
@@ -48,7 +48,7 @@ public class KodiMovieService {
 		this.kodiHttpUrl = kodiHttpUrl;
 	}
 	
-	public Movie findById(long movieId) {
+	public Mono<Movie> findById(long movieId) {
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.APPLICATION_JSON_UTF8);
 		headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON_UTF8));
@@ -57,10 +57,25 @@ public class KodiMovieService {
 		final KodiApiResponse kodiApiResponse = restTemplate.postForObject(kodiHttpUrl, entity, KodiApiResponse.class);
 		final JsonNode result = kodiApiResponse.getResult()
 				.orElseThrow(() -> new NullPointerException("kodiApiResponse did not contain result.  "+kodiApiResponse.toString()));
-		return Optional.ofNullable(result.get("moviedetails"))
+		return Mono.justOrEmpty(Optional.ofNullable(result.get("moviedetails"))
 				.map(this::jsonNodeToMovie)
-				.orElseThrow(() -> new NullPointerException("kodiApiResponse did not contain expected result. expected moviedetails, was: "+kodiApiResponse.toString()));
+				.orElseThrow(() -> new NullPointerException("kodiApiResponse did not contain expected result. expected moviedetails, was: "+kodiApiResponse.toString()))
+		);
+	}
+	
+	public Mono<Movie> getCurrentlyPlayingMovie() {
+		HttpHeaders headers = new HttpHeaders();
+		headers.setContentType(MediaType.APPLICATION_JSON_UTF8);
+		headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON_UTF8));
+		HttpEntity<String> entity = new HttpEntity<String>(GET_PLAYING_BODY,headers);
 		
+		final KodiApiResponse kodiApiResponse = restTemplate.postForObject(kodiHttpUrl, entity, KodiApiResponse.class);
+		final JsonNode result = kodiApiResponse.getResult()
+				.orElseThrow(() -> new NullPointerException("kodiApiResponse did not contain result.  "+kodiApiResponse.toString()));
+		return Optional.ofNullable(result.get("item"))
+				.filter(jsonNode -> "movie".equals(jsonNode.get("type").asText()))
+				.map(jsonNode -> findById(jsonNode.get("id").asLong()))
+				.orElse(Mono.empty());
 	}
 	
 	private Movie jsonNodeToMovie(JsonNode mdJsonObject) {
@@ -79,8 +94,9 @@ public class KodiMovieService {
 		HttpEntity<String> entity = new HttpEntity<String>(String.format(SET_RATING_BODY,rating, movieId) ,headers);
 		
 		final KodiApiResponse kodiApiResponse = restTemplate.postForObject(kodiHttpUrl, entity,KodiApiResponse.class);
-		final Movie movie = findById(movieId);
-		currentMovieChangedChannel.send(MessageBuilder.withPayload(movie).build());
-		return Mono.empty();
+		return findById(movieId)
+				.flatMap(movie -> Mono.just(currentMovieChangedChannel.send(MessageBuilder.withPayload(movie).build())))
+				.cast(Void.class);
+		
 	}
 }

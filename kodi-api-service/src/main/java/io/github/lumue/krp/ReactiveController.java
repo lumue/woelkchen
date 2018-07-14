@@ -38,5 +38,10 @@ public class ReactiveController {
 		return kodiMovieService.setRating(movieId,rating);
 	}
 	
+	@GetMapping(value = "/movies/playing")
+	public Mono<Movie> getPlaying( ){
+		return kodiMovieService.getCurrentlyPlayingMovie();
+	}
+	
 	
 }

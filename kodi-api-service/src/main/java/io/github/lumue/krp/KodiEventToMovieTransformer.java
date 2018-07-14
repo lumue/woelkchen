@@ -31,7 +31,7 @@ public class KodiEventToMovieTransformer implements Transformer {
 					.getJSONObject("item")
 					.getLong("id");
 			
-			final Movie movie = kodiMovieService.findById(movieId);
+			final Movie movie = kodiMovieService.findById(movieId).block();
 			
 			return MessageBuilder
 					.withPayload(movie)

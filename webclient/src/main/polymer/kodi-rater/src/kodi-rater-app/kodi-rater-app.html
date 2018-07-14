@@ -20,6 +20,16 @@
 			  content-type="application/json"
 	  ></iron-ajax>
 
+	  <iron-ajax
+			  auto
+			  id="getPlayingRequest"
+			  url="[[apiUrl]]/movies/playing"
+			  handle-as="json"
+			  method="get"
+			  content-type="application/json"
+			  last-response="{{currentMovie}}"
+	  ></iron-ajax>
+
 
 	  <rate-item-view movie="{{currentMovie}}" on-rating-changed="_handleRatingChanged"></rate-item-view>
   </template>
