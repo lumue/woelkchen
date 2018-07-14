@@ -10,6 +10,7 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Mono;
 
 import java.io.IOException;
 import java.util.Collections;
@@ -26,6 +27,7 @@ public class KodiMovieService {
 	private final String kodiHttpUrl;
 	
 	private final static String GET_MOVIE_BODY="{\"jsonrpc\": \"2.0\", \"method\": \"VideoLibrary.GetMovieDetails\", \"params\": {  \"movieid\": %s ,\"properties\": [\"title\",\"runtime\",\"thumbnail\",\"tagline\",\"userrating\",\"tag\",\"dateadded\",\"lastplayed\",\"genre\",\"streamdetails\"]}, \"id\": \"MovieGetDetails\"}";
+	private final static String SET_RATING_BODY="{\"jsonrpc\": \"2.0\",\"method\": \"VideoLibrary.SetMovieDetails\",\"params\": {\"userrating\": %s,\"movieid\": %s},\t\"id\": \"MovieSetDetails\"}";
 	
 	private final WebClient kodiWebClient;
 	
@@ -63,5 +65,15 @@ public class KodiMovieService {
 			e.printStackTrace();
 			throw new RuntimeException(e);
 		}
+	}
+	
+	public Mono<Movie> setRating(Long movieId, Long rating) {
+		HttpHeaders headers = new HttpHeaders();
+		headers.setContentType(MediaType.APPLICATION_JSON_UTF8);
+		headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON_UTF8));
+		HttpEntity<String> entity = new HttpEntity<String>(String.format(SET_RATING_BODY,rating, movieId) ,headers);
+		
+		final KodiApiResponse kodiApiResponse = restTemplate.postForObject(kodiHttpUrl, entity,KodiApiResponse.class);
+		return Mono.justOrEmpty(findById(movieId));
 	}
 }

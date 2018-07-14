@@ -46,15 +46,18 @@
                 color: var(--google-blue-500);
             }
 
-            iron-icon.star {
+            iron-icon.star_gold {
                 --iron-icon-width: 32px;
                 --iron-icon-height: 32px;
                 color: var(--paper-amber-500);
 	            flex-grow: 1;
             }
 
-            iron-icon.star:last-of-type {
+            iron-icon.star_grey {
+	            --iron-icon-width: 32px;
+	            --iron-icon-height: 32px;
                 color: var(--paper-grey-500);
+	            flex-grow: 1;
             }
         </style>
         <paper-card image="[[movie.thumbnailHttpUrl]]">
@@ -66,11 +69,11 @@
                     </div>
                 </div>
                 <div class="movie-rating">
-                    <iron-icon class="star" icon="star"></iron-icon>
-                    <iron-icon class="star" icon="star"></iron-icon>
-                    <iron-icon class="star" icon="star"></iron-icon>
-                    <iron-icon class="star" icon="star"></iron-icon>
-                    <iron-icon class="star" icon="star"></iron-icon>
+                    <iron-icon class$="[[_classForStar(1,movie)]]" data-rating="1" icon="star" on-click="_setRating"></iron-icon>
+                    <iron-icon class$="[[_classForStar(2,movie)]]" data-rating="2" icon="star" on-click="_setRating"></iron-icon>
+                    <iron-icon class$="[[_classForStar(3,movie)]]" data-rating="3" icon="star" on-click="_setRating"></iron-icon>
+                    <iron-icon class$="[[_classForStar(4,movie)]]" data-rating="4" icon="star" on-click="_setRating"></iron-icon>
+                    <iron-icon class$="[[_classForStar(5,movie)]]" data-rating="5" icon="star" on-click="_setRating"></iron-icon>
                 </div>
                 <p>[[movie.tagline]]</p>
             </div>
@@ -103,6 +106,26 @@
 			var date = new Date(1970,0,1);
 			date.setSeconds(totalSeconds);
 			return date.toTimeString().replace(/.*(\d{2}:\d{2}:\d{2}).*/, "$1");
+		}
+
+		_classForStar(star,movie){
+			if(!movie || !movie.userrating)
+				return "star_grey";
+			var  rating=Math.round(movie.userrating/2);
+            if(rating>=star)
+            	return "star_gold"
+	        return "star_grey";
+		}
+
+		_setRating(e){
+			if(!this.movie)
+				return;
+
+			const rating=e.target.dataset.rating;
+
+			this.movie.userrating=rating*2;
+
+			this.dispatchEvent(new CustomEvent('rating-changed', {bubbles: true, composed: true,detail: this.movie.userrating}));
 		}
 	}
 

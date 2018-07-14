@@ -1,5 +1,6 @@
 <link rel="import" href="../../bower_components/polymer/polymer-element.html">
 <link rel="import" href="../../bower_components/sse-client/sse-client.html">
+<link rel="import" href="../../bower_components/iron-ajax/iron-ajax.html">
 <link rel="import" href="rate-item-view.html">
 
 <dom-module id="kodi-rater-app">
@@ -9,8 +10,20 @@
         display: block;
       }
     </style>
-    <sse-client id="eventSource" url="[[apiUrl]]/events" on-message="_handleEvent"></sse-client>
-    <rate-item-view movie="{{currentMovie}}"></rate-item-view>
+
+	  <sse-client id="eventSource" url="[[apiUrl]]/events" on-message="_handleEvent"></sse-client>
+
+	  <iron-ajax
+			  id="updateRatingRequest"
+			  handle-as="json"
+			  method="put"
+			  on-response="handleResponse"
+			  content-type="application/json"
+			  on-response="_handleUpdateRatingResponse"
+	  ></iron-ajax>
+
+
+	  <rate-item-view movie="{{currentMovie}}" on-rating-changed="_handleRatingChanged"></rate-item-view>
   </template>
 
   <script>/**
@@ -54,6 +67,16 @@
 
 	  _handleEvent(data) {
 		  this.currentMovie=data.detail;
+	  }
+
+	  handleResponse(response) {
+		  this.currentMovie=response.detail.response;
+	  }
+
+	  _handleRatingChanged(e) {
+		  this.$.updateRatingRequest.body=JSON.stringify(e.detail);
+		  this.$.updateRatingRequest.url=this.apiUrl+"/movies/"+this.currentMovie.movieid+"/rating"
+		  this.$.updateRatingRequest.generateRequest();
 	  }
   }
 

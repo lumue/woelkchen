@@ -7,7 +7,8 @@ import java.net.URLEncoder
 data class Movie
 
 @JsonCreator
-constructor(val title: String,
+constructor(val movieid: String,
+            val title: String,
             val thumbnail: String,
             val tagline: String,
             val dateadded: String,

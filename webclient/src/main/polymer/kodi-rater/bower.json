@@ -9,7 +9,8 @@
     "paper-icon-button": "^2.2.0",
     "paper-styles": "^2.1.0",
     "paper-card": "PolymerElements/paper-card#^2.1.0",
-    "sse-client": "^1.0.0"
+    "sse-client": "^1.0.0",
+    "iron-ajax": "^2.1.3"
   },
   "devDependencies": {
     "web-component-tester": "Polymer/web-component-tester#^6.0.0",
