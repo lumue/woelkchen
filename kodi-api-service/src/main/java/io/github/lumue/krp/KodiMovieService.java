@@ -12,6 +12,7 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.Optional;
 
 @Service
@@ -42,7 +43,8 @@ public class KodiMovieService {
 	
 	public Movie findById(long movieId) {
 		HttpHeaders headers = new HttpHeaders();
-		headers.setContentType(MediaType.APPLICATION_JSON);
+		headers.setContentType(MediaType.APPLICATION_JSON_UTF8);
+		headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON_UTF8));
 		HttpEntity<String> entity = new HttpEntity<String>(String.format(GET_MOVIE_BODY, movieId) ,headers);
 		
 		final KodiApiResponse kodiApiResponse = restTemplate.postForObject(kodiHttpUrl, entity, KodiApiResponse.class);
