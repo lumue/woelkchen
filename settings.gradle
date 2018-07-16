@@ -1,4 +1,4 @@
-rootProject.name = 'kodi-rate-playing'
+rootProject.name = 'mediacenter-services'
 
 include (
 		'kodi-api-service',
