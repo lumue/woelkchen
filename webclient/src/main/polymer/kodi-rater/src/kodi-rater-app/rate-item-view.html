@@ -72,19 +72,23 @@
 			.taglabel {
 				border: solid #0d47a1;
 				color: #0d47a1;
-				padding: 10px;
-				margin-left: 5px;
+				padding: 5px;
+				margin-right: 5px;
 				margin-bottom: 5px;
 				border-radius: 8px;
+				min-width: 70px;
+				justify-content: center;
 			}
 
 			.taglabel_selected {
 				background-color: #0d47a1;
 				color: #a8a8a8;
-				padding: 10px;
-				margin-left: 5px;
+				padding: 5px;
+				margin-right: 5px;
 				margin-bottom: 5px;
 				border-radius: 8px;
+				min-width: 70px;
+				justify-content: center;
 			}
 
 
@@ -111,8 +115,10 @@
 					           on-click="_setRating"></iron-icon>
 				</div>
 				<div class="tags">
-					<template is="dom-repeat" items="{{movie.tag}}">
-						<div class="taglabel">
+					<template is="dom-repeat"  items="{{movie.tag}}">
+						<div class$="[[_classForTag(item)]]"
+						     data-tag$="[[item]]"
+						     on-click="_toggleTag">
 							<span>[[item]]</span>
 						</div>
 					</template>
@@ -135,6 +141,10 @@
 				movie: {
 					type: Object,
 					value: null
+				},
+				selectedTags:{
+					type: Array,
+					value: []
 				}
 			};
 		}
@@ -158,6 +168,16 @@
 			return "star_grey";
 		}
 
+		_classForTag(tag) {
+			if (!this.selectedTags
+					|| this.selectedTags.length===0
+					|| !this.selectedTags.contains(tag))
+				return "taglabel";
+
+
+			return "taglabel_selected";
+		}
+
 		_setRating(e) {
 			if (!this.movie)
 				return;
@@ -171,6 +191,19 @@
 				composed: true,
 				detail: this.movie.userrating
 			}));
+		}
+
+		_toggleTag(e) {
+			if (!this.movie)
+				return;
+
+			const tag = e.target.dataset.tag;
+			if(!_.find(this.selectedTags,(t)=>{tag===t}))
+				this.selectedTags.push(tag)
+			else
+				_.remove(this.selectedTags,(t) => {
+					tag===t;
+				})
 		}
 	}
 
