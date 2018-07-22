@@ -9,78 +9,119 @@
 <link rel="import" href="../../bower_components/paper-card/paper-card.html">
 
 <dom-module id="rate-item-view">
-    <template>
-        <style is="custom-style">
-            body {
-                display: flex;
-                align-items: center;
-                justify-content: center;
-            }
+	<template>
+		<style is="custom-style">
+			body {
+				display: flex;
+				align-items: center;
+				justify-content: center;
+			}
 
-            paper-card {
-                max-width: 500px;
-            }
+			paper-card {
+				max-width: 500px;
+			}
 
-            .movie-header {
-                @apply --paper-font-headline;
-            }
+			.movie-header {
+				@apply --paper-font-headline;
+			}
 
-            .movie-light {
-                color: var(--paper-grey-600);
-            }
+			.movie-light {
+				color: var(--paper-grey-600);
+			}
 
-            .movie-duration {
-                float: right;
-                font-size: 15px;
-                vertical-align: middle;
-            }
+			.movie-duration {
+				float: right;
+				font-size: 15px;
+				vertical-align: middle;
+			}
 
-            .movie-rating{
-	            display: flex;
-	            flex-direction: row;
-	            margin-top: 25px;
-	            margin-bottom: 25px;
-            }
+			.movie-rating {
+				display: flex;
+				flex-direction: row;
+				margin-top: 25px;
+				margin-bottom: 25px;
+			}
 
-            .movie-reserve {
-                color: var(--google-blue-500);
-            }
+			.tags {
+				display: flex;
+				flex-direction: row;
+				flex-wrap: wrap;
+				margin-top: 25px;
+				margin-bottom: 25px;
+				justify-content: space-evenly;
+			}
 
-            iron-icon.star_gold {
-                --iron-icon-width: 32px;
-                --iron-icon-height: 32px;
-                color: var(--paper-amber-500);
-	            flex-grow: 1;
-            }
+			.movie-reserve {
+				color: var(--google-blue-500);
+			}
 
-            iron-icon.star_grey {
-	            --iron-icon-width: 32px;
-	            --iron-icon-height: 32px;
-                color: var(--paper-grey-500);
-	            flex-grow: 1;
-            }
-        </style>
-        <paper-card image="[[movie.thumbnailHttpUrl]]">
-            <div class="card-content">
-                <div class="movie-header">[[movie.title]]
-                    <div class="movie-duration movie-light">
-                        <iron-icon icon="av:av-timer"></iron-icon>
-                        <span>[[_formatDuration(movie.duration)]]</span>
-                    </div>
-                </div>
-                <div class="movie-rating">
-                    <iron-icon class$="[[_classForStar(1,movie)]]" data-rating="1" icon="star" on-click="_setRating"></iron-icon>
-                    <iron-icon class$="[[_classForStar(2,movie)]]" data-rating="2" icon="star" on-click="_setRating"></iron-icon>
-                    <iron-icon class$="[[_classForStar(3,movie)]]" data-rating="3" icon="star" on-click="_setRating"></iron-icon>
-                    <iron-icon class$="[[_classForStar(4,movie)]]" data-rating="4" icon="star" on-click="_setRating"></iron-icon>
-                    <iron-icon class$="[[_classForStar(5,movie)]]" data-rating="5" icon="star" on-click="_setRating"></iron-icon>
-                </div>
-                <p>[[movie.tagline]]</p>
-            </div>
-        </paper-card>
-    </template>
+			iron-icon.star_gold {
+				--iron-icon-width: 32px;
+				--iron-icon-height: 32px;
+				color: var(--paper-amber-500);
+				flex-grow: 1;
+			}
 
-    <script>/**
+			iron-icon.star_grey {
+				--iron-icon-width: 32px;
+				--iron-icon-height: 32px;
+				color: var(--paper-grey-500);
+				flex-grow: 1;
+			}
+
+			.taglabel {
+				border: solid #0d47a1;
+				color: #0d47a1;
+				padding: 10px;
+				margin-left: 5px;
+				margin-bottom: 5px;
+				border-radius: 8px;
+			}
+
+			.taglabel_selected {
+				background-color: #0d47a1;
+				color: #a8a8a8;
+				padding: 10px;
+				margin-left: 5px;
+				margin-bottom: 5px;
+				border-radius: 8px;
+			}
+
+
+		</style>
+		<paper-card image="[[movie.thumbnailHttpUrl]]">
+			<div class="card-content">
+				<div class="movie-header">[[movie.title]]
+					<div class="movie-duration movie-light">
+						<iron-icon icon="av:av-timer"></iron-icon>
+						<span>[[_formatDuration(movie.duration)]]</span>
+					</div>
+				</div>
+				<p>[[movie.tagline]]</p>
+				<div class="movie-rating">
+					<iron-icon class$="[[_classForStar(1,movie)]]" data-rating="1" icon="star"
+					           on-click="_setRating"></iron-icon>
+					<iron-icon class$="[[_classForStar(2,movie)]]" data-rating="2" icon="star"
+					           on-click="_setRating"></iron-icon>
+					<iron-icon class$="[[_classForStar(3,movie)]]" data-rating="3" icon="star"
+					           on-click="_setRating"></iron-icon>
+					<iron-icon class$="[[_classForStar(4,movie)]]" data-rating="4" icon="star"
+					           on-click="_setRating"></iron-icon>
+					<iron-icon class$="[[_classForStar(5,movie)]]" data-rating="5" icon="star"
+					           on-click="_setRating"></iron-icon>
+				</div>
+				<div class="tags">
+					<template is="dom-repeat" items="{{movie.tag}}">
+						<div class="taglabel">
+							<span>[[item]]</span>
+						</div>
+					</template>
+				</div>
+			</div>
+		</paper-card>
+	</template>
+
+	<script>/**
 	 * @customElement
 	 * @polymer
 	 */
@@ -98,34 +139,38 @@
 			};
 		}
 
-		_formatDuration(totalSeconds){
+		_formatDuration(totalSeconds) {
 
-			if(!totalSeconds)
+			if (!totalSeconds)
 				return "unknown"
 
-			var date = new Date(1970,0,1);
+			var date = new Date(1970, 0, 1);
 			date.setSeconds(totalSeconds);
 			return date.toTimeString().replace(/.*(\d{2}:\d{2}:\d{2}).*/, "$1");
 		}
 
-		_classForStar(star,movie){
-			if(!movie || !movie.userrating)
+		_classForStar(star, movie) {
+			if (!movie || !movie.userrating)
 				return "star_grey";
-			var  rating=Math.round(movie.userrating/2);
-            if(rating>=star)
-            	return "star_gold"
-	        return "star_grey";
+			var rating = Math.round(movie.userrating / 2);
+			if (rating >= star)
+				return "star_gold"
+			return "star_grey";
 		}
 
-		_setRating(e){
-			if(!this.movie)
+		_setRating(e) {
+			if (!this.movie)
 				return;
 
-			const rating=e.target.dataset.rating;
+			const rating = e.target.dataset.rating;
 
-			this.movie.userrating=rating*2;
+			this.movie.userrating = rating * 2;
 
-			this.dispatchEvent(new CustomEvent('rating-changed', {bubbles: true, composed: true,detail: this.movie.userrating}));
+			this.dispatchEvent(new CustomEvent('rating-changed', {
+				bubbles: true,
+				composed: true,
+				detail: this.movie.userrating
+			}));
 		}
 	}
 
