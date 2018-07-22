@@ -1,4 +1,4 @@
-package io.github.lumue.krp;
+package io.github.lumue.kodiservice;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;

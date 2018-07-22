@@ -1,7 +1,7 @@
 buildscript {
 	ext {
 		springBootVersion = '2.0.3.RELEASE'
-		kotlin_version = '1.2.50'
+		kotlin_version = '1.2.51'
 	}
 	repositories {
 		mavenCentral()
@@ -34,7 +34,6 @@ dependencies {
 	compile('org.springframework.boot:spring-boot-starter-integration')
 	compile("org.springframework.integration:spring-integration-websocket")
 	compile("org.springframework.integration:spring-integration-webflux")
-	compile group: 'org.json', name: 'json', version: '20180130'
 	compile group: 'org.apache.commons', name: 'commons-collections4', version: '4.1'
 
 

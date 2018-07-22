@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:int="http://www.springframework.org/schema/integration"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/integration http://www.springframework.org/schema/integration/spring-integration-5.0.xsd"
+>
+
+
+	<int:filter input-channel="kodiEventChannel"
+	            output-channel="onPlayEventChannel"
+	            ref="onPlayEventFilter"/>
+
+	<int:channel id="onPlayEventChannel">
+		<int:queue capacity="100"/>
+	</int:channel>
+
+	<int:transformer input-channel="onPlayEventChannel"
+	                 output-channel="currentMovieChangedChannel"
+	                 ref="kodiEventToMovieTransformer"
+	>
+		<int:poller fixed-delay="1" time-unit="SECONDS" max-messages-per-poll="1">
+		</int:poller>
+	</int:transformer>
+
+	<int:publish-subscribe-channel id="currentMovieChangedChannel"/>
+
+
+</beans>

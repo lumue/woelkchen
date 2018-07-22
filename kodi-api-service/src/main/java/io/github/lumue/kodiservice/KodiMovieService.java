@@ -1,4 +1,4 @@
-package io.github.lumue.krp;
+package io.github.lumue.kodiservice;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -12,6 +12,7 @@ import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.io.IOException;
@@ -98,5 +99,9 @@ public class KodiMovieService {
 				.flatMap(movie -> Mono.just(currentMovieChangedChannel.send(MessageBuilder.withPayload(movie).build())))
 				.cast(Void.class);
 		
+	}
+	
+	public Flux<String> getAllTags() {
+		return null;
 	}
 }

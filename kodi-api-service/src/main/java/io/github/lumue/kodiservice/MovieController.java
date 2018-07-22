@@ -1,4 +1,4 @@
-package io.github.lumue.krp;
+package io.github.lumue.kodiservice;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -10,14 +10,14 @@ import reactor.core.publisher.Mono;
 
 @RestController
 @CrossOrigin
-public class ReactiveController {
+public class MovieController {
 	
 	private final PublishSubscribeChannel currentMovieChangedChannel;
 	
 	private final KodiMovieService kodiMovieService;
 	
 	@Autowired
-	public ReactiveController(PublishSubscribeChannel currentMovieChangedChannel, KodiMovieService kodiMovieService) {
+	public MovieController(PublishSubscribeChannel currentMovieChangedChannel, KodiMovieService kodiMovieService) {
 		this.currentMovieChangedChannel = currentMovieChangedChannel;
 		this.kodiMovieService = kodiMovieService;
 	}
@@ -43,5 +43,17 @@ public class ReactiveController {
 		return kodiMovieService.getCurrentlyPlayingMovie();
 	}
 	
+	@GetMapping(value = "/movies/tags")
+	public Flux <String> getTags( ){
+		return kodiMovieService.getAllTags();
+	}
+	
+	@GetMapping(value = "/movies/{movieId}/tags")
+	public Flux <String> getTags( @PathVariable Long movieId){
+		return kodiMovieService.findById(movieId)
+				.map(Movie::getTag)
+				.flatMapMany(Flux::fromIterable);
+				
+	}
 	
 }

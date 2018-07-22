@@ -1,4 +1,4 @@
-package io.github.lumue.krp;
+package io.github.lumue.kodiservice;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;

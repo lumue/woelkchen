@@ -1,6 +1,6 @@
-package io.github.lumue.krp;
+package io.github.lumue.kodiservice;
 
-import org.json.JSONObject;
+import com.fasterxml.jackson.databind.JsonNode;
 import org.springframework.integration.core.MessageSelector;
 import org.springframework.messaging.Message;
 import org.springframework.stereotype.Component;
@@ -10,8 +10,8 @@ public class OnPlayEventFilter implements MessageSelector {
 	@Override
 	public boolean accept(Message<?> message) {
 		try {
-			JSONObject json = (JSONObject) message.getPayload();
-			return "Player.OnPlay".equals(json.get("method"));
+			JsonNode json = (JsonNode) message.getPayload();
+			return "Player.OnPlay".equals(json.get("method").asText());
 		} catch (Throwable t) {
 			return false;
 		}

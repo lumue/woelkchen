@@ -1,6 +1,6 @@
-package io.github.lumue.krp;
+package io.github.lumue.kodiservice;
 
-import org.json.JSONObject;
+import com.fasterxml.jackson.databind.JsonNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,9 +8,6 @@ import org.springframework.integration.transformer.Transformer;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.stereotype.Component;
-import reactor.core.publisher.Mono;
-
-import java.util.logging.FileHandler;
 
 @Component
 public class KodiEventToMovieTransformer implements Transformer {
@@ -25,14 +22,15 @@ public class KodiEventToMovieTransformer implements Transformer {
 	@Override
 	public Message<?> transform(Message<?> message) {
 		try {
-			JSONObject jsonObject = (JSONObject) message.getPayload();
-			final long movieId = jsonObject.getJSONObject("params")
-					.getJSONObject("data")
-					.getJSONObject("item")
-					.getLong("id");
+			JsonNode jsonObject = (JsonNode) message.getPayload();
+			final long movieId = jsonObject.get("params")
+					.get("data")
+					.get("item")
+					.get("id").asLong();
 			
 			final Movie movie = kodiMovieService.findById(movieId).block();
 			
+			assert movie != null;
 			return MessageBuilder
 					.withPayload(movie)
 					.copyHeadersIfAbsent(message.getHeaders())

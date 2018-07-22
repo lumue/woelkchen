@@ -1,9 +1,8 @@
-package io.github.lumue.krp;
+package io.github.lumue.kodiservice;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.*;
-import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -19,7 +18,11 @@ import org.springframework.web.reactive.function.server.ServerResponse;
 @Configuration
 @EnableWebFlux
 @EnableIntegration
-@ImportResource(locations = "classpath:io/github/lumue/krp/integration-context.xml")
+@ImportResource(locations = {
+		"classpath:io/github/lumue/kodiservice/kodi-handler.xml",
+		"classpath:io/github/lumue/kodiservice/kodi-inbound.xml"
+}
+)
 public class ApplicationConfiguration {
 	
 	@Bean
