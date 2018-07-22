@@ -115,9 +115,9 @@
 					           on-click="_setRating"></iron-icon>
 				</div>
 				<div class="tags">
-					<template is="dom-repeat"  items="{{movie.tag}}">
-						<div class$="[[_classForTag(item)]]"
-						     data-tag$="[[item]]"
+					<template is="dom-repeat" items="{{movie.tag}}">
+						<div class$="[[_classForTag(selectedTags,item)]]"
+						     data-tagname$="{{item}}"
 						     on-click="_toggleTag">
 							<span>[[item]]</span>
 						</div>
@@ -142,9 +142,10 @@
 					type: Object,
 					value: null
 				},
-				selectedTags:{
+				selectedTags: {
 					type: Array,
-					value: []
+					value: [],
+					notify: true
 				}
 			};
 		}
@@ -168,10 +169,15 @@
 			return "star_grey";
 		}
 
-		_classForTag(tag) {
-			if (!this.selectedTags
-					|| this.selectedTags.length===0
-					|| !this.selectedTags.contains(tag))
+		_classForTag(selectedTags, tagname) {
+			const tag = tagname;
+			let containsTag = _.find(selectedTags, (t) => {
+				let found = (t == tag);
+				return found;
+			});
+			if (!selectedTags
+					|| selectedTags.length === 0
+					|| !containsTag)
 				return "taglabel";
 
 
@@ -197,13 +203,17 @@
 			if (!this.movie)
 				return;
 
-			const tag = e.target.dataset.tag;
-			if(!_.find(this.selectedTags,(t)=>{tag===t}))
+			const tag = e.currentTarget.dataset.tagname;
+
+			if (!_.find(this.selectedTags, (t) => {
+				return (t == tag)
+			}))
 				this.selectedTags.push(tag)
 			else
-				_.remove(this.selectedTags,(t) => {
-					tag===t;
+				_.remove(this.selectedTags, (t) => {
+					return (t == tag);
 				})
+			e.currentTarget.className = this._classForTag(this.selectedTags, tag)
 		}
 	}
 
