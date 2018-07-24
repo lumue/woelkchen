@@ -46,4 +46,12 @@ public class KodiApiRequest extends KodiApiMessage{
 		params.put("userrating",userrating);
 		return new KodiApiRequest("VideoLibrary.SetMovieDetails",params);
 	}
+	
+	
+	public static KodiApiRequest newGetTagsRequest(){
+		Map<String,Object> params=new HashMap<>();
+		params.put("type", "movie");
+		return new KodiApiRequest("VideoLibrary.GetTags",params);
+	}
+	
 }

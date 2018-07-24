@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.node.TreeTraversingParser;
 import io.github.lumue.kodiservice.jsonrpc.KodiApiClient;
 import io.github.lumue.kodiservice.jsonrpc.KodiApiRequest;
 import io.github.lumue.kodiservice.jsonrpc.KodiApiResponse;
+import org.apache.commons.collections4.IteratorUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -19,7 +20,9 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -43,9 +46,8 @@ public class KodiMovieService {
 	
 	public Mono<Movie> findById(Long movieId) {
 		return kodiWebClient.execute(KodiApiRequest.newGetMovieRequest(movieId.intValue()))
-				.map(r->
-						r.getResult().map(result->result.get("moviedetails")).orElseThrow(()->new RuntimeException("no moviedetails in result"))
-				)
+				.map(r->r.getResult().orElseThrow(()->new RuntimeException("no result in response")))
+				.map(result->result.get("moviedetails"))
 				.map(this::jsonNodeToMovie);
 	}
 	
@@ -66,8 +68,7 @@ public class KodiMovieService {
 	}
 	
 	public Mono<Void> setRating(Long movieId, Long rating) {
-		final KodiApiRequest kodiApiRequest = KodiApiRequest.newSetUserratingRequest(movieId.intValue(), rating.intValue());
-		return kodiWebClient.execute(kodiApiRequest)
+		return kodiWebClient.execute(KodiApiRequest.newSetUserratingRequest(movieId.intValue(), rating.intValue()))
 				.then(findById(movieId))
 				.flatMap(movie -> Mono.just(currentMovieChangedChannel.send(MessageBuilder.withPayload(movie).build())))
 				.cast(Void.class);
@@ -75,6 +76,11 @@ public class KodiMovieService {
 	}
 	
 	public Flux<String> getAllTags() {
-		return null;
+		return kodiWebClient.execute(KodiApiRequest.newGetTagsRequest())
+				.map(r->r.getResult().orElseThrow(()->new RuntimeException("no result in response")))
+				.map(result-> IteratorUtils.toList(result.get("tags").elements() ))
+				.flatMapMany(Flux::fromIterable)
+				.map(tagNode -> tagNode.get("label").asText());
+				
 	}
 }
