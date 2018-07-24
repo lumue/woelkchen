@@ -1,4 +1,4 @@
-package io.github.lumue.kodiservice;
+package io.github.lumue.kodiservice.jsonrpc;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -6,11 +6,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 
 import java.util.Optional;
 
-public class KodiApiResponse {
-	
-	private final String id;
-	
-	private final String jsonrpc;
+public class KodiApiResponse extends KodiApiMessage {
 	
 	private final JsonNode result;
 	
@@ -19,17 +15,8 @@ public class KodiApiResponse {
 			@JsonProperty("id") String id,
 			@JsonProperty("jsonrpc") String jsonrpc,
 			@JsonProperty("result") JsonNode result) {
-		this.id = id;
-		this.jsonrpc = jsonrpc;
+		super(id, jsonrpc);
 		this.result = result;
-	}
-	
-	public String getId() {
-		return id;
-	}
-	
-	public String getJsonrpc() {
-		return jsonrpc;
 	}
 	
 	public Optional<JsonNode> getResult() {
@@ -39,8 +26,8 @@ public class KodiApiResponse {
 	@Override
 	public String toString() {
 		return "KodiApiResponse{" +
-				"id='" + id + '\'' +
-				", jsonrpc='" + jsonrpc + '\'' +
+				"id='" + getId() + '\'' +
+				", jsonrpc='" + getJsonrpc() + '\'' +
 				", result=" + result +
 				'}';
 	}

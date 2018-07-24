@@ -1,18 +1,19 @@
 package io.github.lumue.kodiservice;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import io.github.lumue.kodiservice.jsonrpc.KodiApiClient;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.*;
 import org.springframework.core.io.ClassPathResource;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
 import org.springframework.integration.config.EnableIntegration;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.reactive.config.EnableWebFlux;
-import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.server.RouterFunction;
 import org.springframework.web.reactive.function.server.RouterFunctions;
 import org.springframework.web.reactive.function.server.ServerResponse;
+
+import java.net.MalformedURLException;
 
 
 @Configuration
@@ -31,12 +32,13 @@ public class ApplicationConfiguration {
 	}
 	
 	
-	@Bean("kodiWebClient")
-	public WebClient kodiWebClient(WebClient.Builder builder, String kodiHttpUrl){
-		return builder
-				.baseUrl(kodiHttpUrl)
-				.defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-				.build();
+	@Bean("kodiApiClient")
+	public KodiApiClient kodiWebClient(
+			@Value("${krp.kodi.url.http}") String kodiHttpUrl,
+			@Value("${krp.kodi.username}") String username,
+			@Value("${krp.kodi.password}") String password,
+			ObjectMapper objectMapper) throws MalformedURLException {
+		return new KodiApiClient(kodiHttpUrl,username,password, objectMapper);
 	}
 	
 	@Bean

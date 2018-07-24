@@ -4,9 +4,9 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class KodiRatePlayingApplication {
+public class KodiServiceApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(KodiRatePlayingApplication.class, args);
+		SpringApplication.run(KodiServiceApplication.class, args);
 	}
 }
