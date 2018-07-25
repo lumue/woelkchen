@@ -8,6 +8,8 @@ import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.util.List;
+
 @RestController
 @CrossOrigin
 public class MovieController {
@@ -43,16 +45,16 @@ public class MovieController {
 		return kodiMovieService.getCurrentlyPlayingMovie();
 	}
 	
-	@GetMapping(value = "/movies/tags")
-	public Flux <String> getTags( ){
-		return kodiMovieService.getAllTags();
+	@GetMapping(value = "/movies/tags",produces = MediaType.APPLICATION_JSON_VALUE)
+	public Mono<List <String>> getTags( ){
+		return kodiMovieService.getAllTags().collectList();
 	}
 	
 	@GetMapping(value = "/movies/{movieId}/tags")
-	public Flux <String> getTags( @PathVariable Long movieId){
+	public Mono<List<String>> getTags(@PathVariable Long movieId){
 		return kodiMovieService.findById(movieId)
 				.map(Movie::getTag)
-				.flatMapMany(Flux::fromIterable);
+				.flatMapMany(Flux::fromIterable).collectList();
 				
 	}
 	
