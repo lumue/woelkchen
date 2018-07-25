@@ -13,8 +13,22 @@
     <script src="bower_components/webcomponentsjs/webcomponents-loader.js"></script>
     <script src="bower_components/lodash/lodash.min.js"></script>
     <link rel="import" href="src/kodi-rater-app/kodi-rater-app.html">
+    <style>
+      body {
+        margin: 0;
+        font-family: 'Roboto', 'Noto', sans-serif;
+        line-height: 1.1;
+        min-height: 100vh;
+        background-color: #eeeeee;
+        position: relative;
+      }
+
+      kodi-rater-app{
+        min-height: 100vh;
+      }
+    </style>
   </head>
-  <body>
+  <body style="min-height: 100vh;position: relative;margin: 0;">
 
     <kodi-rater-app></kodi-rater-app>
   </body>
