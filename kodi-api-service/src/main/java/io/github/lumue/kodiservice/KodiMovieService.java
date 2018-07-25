@@ -51,6 +51,14 @@ public class KodiMovieService {
 				.map(this::jsonNodeToMovie);
 	}
 	
+	public Flux<Movie> findAll() {
+		return kodiWebClient.execute(KodiApiRequest.newGetMoviesRequest())
+				.map(r->r.getResult().orElseThrow(()->new RuntimeException("no result in response")))
+				.map(result->IteratorUtils.toList(result.get("movies").elements()))
+				.flatMapMany(Flux::fromIterable)
+				.map(this::jsonNodeToMovie);
+	}
+	
 	public Mono<Movie> getCurrentlyPlayingMovie() {
 		return kodiWebClient.execute(KodiApiRequest.newGetPlayingItemRequest())
 				.map(r->r.getResult().orElseThrow(()->new RuntimeException("no result in response")))
@@ -83,4 +91,5 @@ public class KodiMovieService {
 				.map(tagNode -> tagNode.get("label").asText());
 				
 	}
+	
 }

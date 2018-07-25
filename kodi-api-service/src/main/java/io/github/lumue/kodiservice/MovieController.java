@@ -58,4 +58,17 @@ public class MovieController {
 				
 	}
 	
+	@GetMapping(value = "/movies/{movieId}")
+	public Mono<Movie> getMovie(@PathVariable Long movieId){
+		return kodiMovieService.findById(movieId);
+		
+	}
+	
+	
+	@GetMapping(value = "/movies")
+	public Flux<Movie> getMovies(){
+		return kodiMovieService.findAll();
+		
+	}
+	
 }

@@ -25,10 +25,10 @@
 	<int:publish-subscribe-channel id="rawKodiWebsocketInputChannel" datatype="java.lang.String"/>
 
 	<int:transformer input-channel="rawKodiWebsocketInputChannel"
-	                 ref="stringToJsonTransformer"
+	                 ref="stringToEventTransformer"
 	                 output-channel="kodiEventChannel"/>
 
-	<int:publish-subscribe-channel id="kodiEventChannel" datatype="com.fasterxml.jackson.databind.JsonNode" />
+	<int:publish-subscribe-channel id="kodiEventChannel" datatype="io.github.lumue.kodiservice.jsonrpc.KodiApiEvent" />
 
 
 

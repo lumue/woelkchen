@@ -2,6 +2,7 @@ package io.github.lumue.kodiservice;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.github.lumue.kodiservice.jsonrpc.KodiApiEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.integration.transformer.Transformer;
@@ -12,13 +13,13 @@ import org.springframework.stereotype.Component;
 import java.io.IOException;
 
 @Component
-public class StringToJsonTransformer implements Transformer {
+public class StringToEventTransformer implements Transformer {
 	
 	private final ObjectMapper objectMapper;
 	
-	private final static Logger LOGGER= LoggerFactory.getLogger(StringToJsonTransformer.class);
+	private final static Logger LOGGER= LoggerFactory.getLogger(StringToEventTransformer.class);
 	
-	public StringToJsonTransformer(ObjectMapper objectMapper) {
+	public StringToEventTransformer(ObjectMapper objectMapper) {
 		this.objectMapper = objectMapper;
 	}
 	
@@ -36,9 +37,9 @@ public class StringToJsonTransformer implements Transformer {
 		}
 	}
 	
-	private JsonNode parseString(String jsonString) {
+	private KodiApiEvent parseString(String jsonString) {
 		try {
-			return objectMapper.readTree(jsonString);
+			return objectMapper.readValue(jsonString, KodiApiEvent.class);
 		} catch (IOException e) {
 			throw new RuntimeException("parsing "+jsonString+" to json failed");
 		}

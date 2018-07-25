@@ -1,6 +1,7 @@
 package io.github.lumue.kodiservice;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import io.github.lumue.kodiservice.jsonrpc.KodiApiEvent;
 import org.springframework.integration.core.MessageSelector;
 import org.springframework.messaging.Message;
 import org.springframework.stereotype.Component;
@@ -10,8 +11,8 @@ public class OnPlayEventFilter implements MessageSelector {
 	@Override
 	public boolean accept(Message<?> message) {
 		try {
-			JsonNode json = (JsonNode) message.getPayload();
-			return "Player.OnPlay".equals(json.get("method").asText());
+			KodiApiEvent event= (KodiApiEvent) message.getPayload();
+			return "Player.OnPlay".equals(event.getName());
 		} catch (Throwable t) {
 			return false;
 		}
