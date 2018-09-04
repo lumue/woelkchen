@@ -53,6 +53,8 @@ dependencies {
 	compile 'org.springframework.kotlin:spring-kotlin-coroutine:0.3.5'
 	compile 'org.springframework.kotlin:spring-webflux-kotlin-coroutine:0.3.5'
 
+	compile 'com.github.lumue:ydlwrapper:master-SNAPSHOT'
+
 	testCompile('org.springframework.boot:spring-boot-starter-test')
 	testCompile('io.projectreactor:reactor-test')
 }

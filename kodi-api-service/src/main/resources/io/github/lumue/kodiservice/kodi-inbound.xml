@@ -15,6 +15,7 @@
 	<int-websocket:client-container id="clientWebSocketContainer"
 	                                client="webSocketClient"
 	                                uri="${krp.kodi.url.ws}"
+
 	/>
 
 	<int-websocket:inbound-channel-adapter container="clientWebSocketContainer"

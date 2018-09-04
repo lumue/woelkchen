@@ -2,5 +2,6 @@ rootProject.name = 'mediacenter-services'
 
 include (
 		'kodi-api-service',
+		'download-service',
 		'webclient'
 )

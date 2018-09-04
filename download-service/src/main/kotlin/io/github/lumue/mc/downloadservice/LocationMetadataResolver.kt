@@ -10,10 +10,10 @@ interface LocationMetadataResolver {
 
 data class LocationMetadata(val contentMetadata: ContentMetadata, val downloadMetadata : DownloadMetadata) {
 
-    data class DownloadMetadata(val mediaStreamMetadata: MediaStreamMetadata,
+    data class DownloadMetadata(val selectedStreams: List<MediaStreamMetadata>,
                                 val additionalStreams: List<MediaStreamMetadata> )
 
-    class MediaStreamMetadata (val url:String,
+    data class MediaStreamMetadata (val url:String,
                                val headers: Map<String,String>,
                                val contentType: ContentType,
                                val codec: String,
