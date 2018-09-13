@@ -1,4 +1,4 @@
-package io.github.lumue.mc.downloadservice
+package io.github.lumue.mc.download
 
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication

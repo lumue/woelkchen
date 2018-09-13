@@ -46,17 +46,20 @@ repositories {
 
 dependencies {
 	compile('org.springframework.boot:spring-boot-starter-webflux')
-	compile('com.fasterxml.jackson.module:jackson-module-kotlin')
 	compile("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
 	compile("org.jetbrains.kotlin:kotlin-reflect")
-
 	compile 'org.springframework.kotlin:spring-kotlin-coroutine:0.3.5'
 	compile 'org.springframework.kotlin:spring-webflux-kotlin-coroutine:0.3.5'
 
 	compile 'com.github.lumue:ydlwrapper:master-SNAPSHOT'
+	compile('com.fasterxml.jackson.module:jackson-module-kotlin')
+	compile 'org.jsoup:jsoup:1.11.3'
+	compile 'org.slf4j:slf4j-api:1.7.10'
+
 
 	testCompile('org.springframework.boot:spring-boot-starter-test')
 	testCompile('io.projectreactor:reactor-test')
+	testCompile group: 'ch.qos.logback', name: 'logback-classic', version: "$logback_version"
 }
 kotlin {
 	experimental {

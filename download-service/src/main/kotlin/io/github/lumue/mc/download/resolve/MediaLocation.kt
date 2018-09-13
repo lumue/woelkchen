@@ -1,4 +1,4 @@
-package io.github.lumue.mc.downloadservice
+package io.github.lumue.mc.download.resolve
 
 import java.time.LocalDateTime
 

@@ -1,4 +1,6 @@
-import io.github.lumue.mc.downloadservice.LocationMetadata
+package io.github.lumue.mc.download.resolve.ydl
+
+import io.github.lumue.mc.download.resolve.LocationMetadata
 import io.github.lumue.ydlwrapper.metadata.single_info_json.Format
 import io.github.lumue.ydlwrapper.metadata.single_info_json.HttpHeaders
 import io.github.lumue.ydlwrapper.metadata.single_info_json.RequestedFormat
@@ -12,7 +14,7 @@ import java.net.URLConnection
 import kotlin.streams.toList
 
 fun YdlInfoJson.toLocationMetadata(): LocationMetadata {
-    return LocationMetadata(this.toContentMetadata(),this.toDownloadMetadata())
+    return LocationMetadata(this.url,this.toContentMetadata(), this.toDownloadMetadata())
 }
 
 private fun YdlInfoJson.toDownloadMetadata(): LocationMetadata.DownloadMetadata {
@@ -48,6 +50,7 @@ private fun RequestedFormat.toStreamMetadata(): LocationMetadata.MediaStreamMeta
     }
 
     return LocationMetadata.MediaStreamMetadata(
+            this.formatId,
             this.url,
             this.httpHeaders.toMap(),
             type,
@@ -57,7 +60,7 @@ private fun RequestedFormat.toStreamMetadata(): LocationMetadata.MediaStreamMeta
 }
 
 private fun YdlInfoJson.toContentMetadata(): LocationMetadata.ContentMetadata {
-    return LocationMetadata.ContentMetadata(title)
+    return LocationMetadata.ContentMetadata(title,description)
 }
 
 private fun HttpHeaders.toMap(): Map<String, String> {
@@ -85,8 +88,9 @@ private fun Format.toStreamMetadata(): LocationMetadata.MediaStreamMetadata {
         }
     }
 
-    val expectedSize = filesize?.toLong() ?:getFilesizeFromUrl(url)
+    val expectedSize = filesize?.toLong() ?: getFilesizeFromUrl(url)
     return LocationMetadata.MediaStreamMetadata(
+            this.formatId,
             this.url,
             this.httpHeaders.toMap(),
             type,
