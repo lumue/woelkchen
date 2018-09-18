@@ -1,12 +1,11 @@
-package io.github.lumue.mc.download.resolve
+package io.github.lumue.mc.dlservice.resolve
 
-interface LocationMetadataResolver {
+import java.time.LocalDateTime
 
-     suspend fun resolveMetadata(l: MediaLocation) : LocationMetadata
+data class MediaLocation(val url: String,
+                         val added: LocalDateTime) {
 
 }
-
-
 
 data class LocationMetadata(val url: String,
                             val contentMetadata: ContentMetadata,
@@ -30,4 +29,3 @@ data class LocationMetadata(val url: String,
     data class ContentMetadata(val title: String, val desription:String)
 
 }
-

@@ -55,6 +55,9 @@ dependencies {
 	compile('com.fasterxml.jackson.module:jackson-module-kotlin')
 	compile 'org.jsoup:jsoup:1.11.3'
 	compile 'org.slf4j:slf4j-api:1.7.10'
+	compile 'com.github.kittinunf.fuel:fuel:1.15.0'
+	compile 'com.github.kittinunf.fuel:fuel-coroutines:1.15.0'
+	compile group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.5.5'
 
 
 	testCompile('org.springframework.boot:spring-boot-starter-test')

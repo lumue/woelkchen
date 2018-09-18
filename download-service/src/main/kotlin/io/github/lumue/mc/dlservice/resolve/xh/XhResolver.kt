@@ -1,17 +1,21 @@
-package io.github.lumue.mc.download.resolve.xh
+package io.github.lumue.mc.dlservice.resolve.xh
 
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
-import io.github.lumue.mc.download.resolve.LocationMetadata
-import io.github.lumue.mc.download.resolve.LocationMetadataResolver
-import io.github.lumue.mc.download.resolve.MediaLocation
+import io.github.lumue.mc.dlservice.resolve.LocationMetadata
+import io.github.lumue.mc.dlservice.resolve.LocationMetadataResolver
+import io.github.lumue.mc.dlservice.resolve.MediaLocation
 import org.jsoup.Jsoup
+import org.slf4j.LoggerFactory
 
 class XhResolver : LocationMetadataResolver {
 
     val objectMapper: ObjectMapper = ObjectMapper()
 
-    override suspend fun resolveMetadata(l: MediaLocation): LocationMetadata {
+    private val logger = LoggerFactory.getLogger(this.javaClass.name)
+
+    override fun resolveMetadata(l: MediaLocation): LocationMetadata {
+        logger.debug("resolving metadata for location "+l)
         val initialsJson = getInitialsJsonForURL(l)["videoModel"]
         return LocationMetadata(
                 l.url,

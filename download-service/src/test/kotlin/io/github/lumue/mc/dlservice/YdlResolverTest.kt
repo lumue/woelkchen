@@ -1,0 +1,27 @@
+package io.github.lumue.mc.dlservice
+
+import io.github.lumue.mc.dlservice.resolve.MediaLocation
+import io.github.lumue.mc.dlservice.resolve.ydl.YdlResolver
+
+import org.junit.Test
+import org.slf4j.LoggerFactory
+import java.time.LocalDateTime
+
+class YdlResolverTest {
+
+    private val GETDOWN_TESTVIDEO_URL = "https://www.youtube.com/watch?v=nwP80FmSpOw"
+
+    private val logger = LoggerFactory.getLogger(this.javaClass.name)
+
+    @Test
+    fun testResolveYoutubeMetadata() {
+                    val l = MediaLocation(GETDOWN_TESTVIDEO_URL, LocalDateTime.now())
+
+                            val metadata = YdlResolver()
+                                    .resolveMetadata(l)
+                            logger.info(metadata.toString())
+
+    }
+
+
+}
