@@ -20,7 +20,6 @@ class FileDownloader {
                          targetPath: String,
                          progressHandler: ((readBytes: Long, totalBytes: Long) -> Unit)?): FileDownloadResult {
 
-        var done = false
         val targetfile = targetPath + File.separator + m.contentType + "." + m.filenameExtension
         logger.debug("downloading from " + m.url + " to " + targetfile)
 
@@ -86,7 +85,7 @@ class ApacheHttpFileDownloader  {
                             }
                         }
 
-
+                        var downloadedBytes=resumeAt;
                         // opens an output stream to save into file
                         FileOutputStream(filename, append).use { outputStream ->
                             entity.getContent().use { inputStream ->
@@ -94,10 +93,9 @@ class ApacheHttpFileDownloader  {
                                 val buffer = ByteArray(BUFFER_SIZE)
                                 bytesRead = inputStream.read(buffer)
                                 while (bytesRead != -1) {
-                                    LOGGER.debug(bytesRead.toString() + " read from " + m.url)
                                     outputStream.write(buffer, 0, bytesRead)
-                                    LOGGER.debug(bytesRead.toString() + " written to " + filename)
-                                    byteCountConsumer?.invoke(resumeAt+bytesRead.toLong(),m.expectedSize)
+                                    downloadedBytes=downloadedBytes+bytesRead
+                                    byteCountConsumer?.invoke(downloadedBytes,m.expectedSize)
                                     bytesRead = inputStream.read(buffer)
                                 }
                             }

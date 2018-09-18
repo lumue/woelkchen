@@ -21,7 +21,9 @@
 	<int-websocket:inbound-channel-adapter container="clientWebSocketContainer"
 	                                       channel="rawKodiWebsocketInputChannel"
 	                                       payload-type="java.lang.String"
+	                                       auto-startup="true"
 	/>
+
 
 	<int:publish-subscribe-channel id="rawKodiWebsocketInputChannel" datatype="java.lang.String"/>
 

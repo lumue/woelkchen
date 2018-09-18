@@ -7,6 +7,11 @@ import io.github.lumue.mc.dlservice.resolve.LocationMetadataResolver
 import io.github.lumue.mc.dlservice.resolve.MediaLocation
 import org.jsoup.Jsoup
 import org.slf4j.LoggerFactory
+import java.io.IOException
+import java.net.HttpURLConnection
+import java.net.MalformedURLException
+import java.net.URL
+import java.net.URLConnection
 
 class XhResolver : LocationMetadataResolver {
 
@@ -48,10 +53,36 @@ class XhResolver : LocationMetadataResolver {
     }
 
     private fun extractStreamInfo(node: JsonNode): LocationMetadata.MediaStreamMetadata {
-         return LocationMetadata.MediaStreamMetadata(node.toString(),node.textValue(), mapOf(),LocationMetadata.ContentType.CONTAINER,"mp4","mp4",0)
+        val url = node.textValue()
+        val expectedSize = getFilesizeFromUrl(url)
+        return LocationMetadata.MediaStreamMetadata(node.toString(), url, mapOf(),LocationMetadata.ContentType.CONTAINER,"mp4","mp4", expectedSize)
     }
 
     private fun extractContentMetadata(initialsJson: JsonNode): LocationMetadata.ContentMetadata {
         return LocationMetadata.ContentMetadata(initialsJson["title"].textValue(),initialsJson["description"].textValue())
+    }
+}
+private fun getFilesizeFromUrl(urlstring: String): Long {
+    val url: URL
+    try {
+        url = URL(urlstring)
+    } catch (e: MalformedURLException) {
+        return 0
+    }
+
+    var conn: URLConnection? = null
+    try {
+        conn = url.openConnection()
+        if (conn is HttpURLConnection) {
+            conn.requestMethod = "HEAD"
+        }
+        conn!!.getInputStream()
+        return conn.contentLength.toLong()
+    } catch (e: IOException) {
+        return -1L
+    } finally {
+        if (conn is HttpURLConnection) {
+            conn.disconnect()
+        }
     }
 }

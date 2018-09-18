@@ -13,7 +13,7 @@ import java.time.LocalDateTime
 
 class XhDownloadTest {
 
-    private val TESTVIDEO_URL = "https://de.xhamster.com/videos/nina-elle-s-big-fat-bombs-in-your-face-naughty-america-8653702"
+    private val TESTVIDEO_URL = "https://de.xhamster.com/videos/maximum-perversum-10168951"
 
     private val logger = LoggerFactory.getLogger(this.javaClass.name)
 
@@ -42,7 +42,10 @@ class XhDownloadTest {
         val metadata = XhResolver()
                 .resolveMetadata(l)
         runBlocking {
-            FileDownloader().download(metadata.downloadMetadata.selectedStreams[0], "./", null)
+            val progressHandler = fun (p: Long,t:Long) {
+                logger.debug("downloaded $p of $t")
+            }
+            FileDownloader().download(metadata.downloadMetadata.selectedStreams[0], "./", progressHandler )
         }
 
     }
