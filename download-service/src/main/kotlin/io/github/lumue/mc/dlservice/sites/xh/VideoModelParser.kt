@@ -6,7 +6,7 @@ class VideoModelParser{
     val objectMapper : ObjectMapper= ObjectMapper()
 
     fun fromString(s: String):VideoModel{
-        return objectMapper.readValue(s,VideoModel::class.java)
+        return objectMapper.readValue(s,PageInitials::class.java).videoModel
     }
 
 }

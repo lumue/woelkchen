@@ -1,11 +1,12 @@
 package io.github.lumue.mc.dlservice.sites.xh
 
 import com.fasterxml.jackson.annotation.JsonProperty
+import com.fasterxml.jackson.databind.JsonNode
 
 
 data class VideoModel(
         @JsonProperty("duration") val duration: Int = 0,
-        @JsonProperty("title") val title: String = "",
+        @JsonProperty("title") val title: String? = "",
         @JsonProperty("pageURL") val pageURL: String = "",
         @JsonProperty("icon") val icon: Any? = Any(),
         @JsonProperty("spriteURL") val spriteURL: String = "",
@@ -21,7 +22,7 @@ data class VideoModel(
         @JsonProperty("views") val views: Int = 0,
         @JsonProperty("comments") val comments: Int = 0,
         @JsonProperty("modified") val modified: Int = 0,
-        @JsonProperty("orientation") val orientation: Int = 0,
+        @JsonProperty("orientation") val orientation: String = "",
         @JsonProperty("secured") val secured: Int = 0,
         @JsonProperty("status") val status: Int = 0,
         @JsonProperty("description") val description: String = "",
@@ -31,7 +32,7 @@ data class VideoModel(
         @JsonProperty("sources") val sources: Sources = Sources(),
         @JsonProperty("dimensions") val dimensions: Dimensions = Dimensions(),
         @JsonProperty("categories") val categories: List<Category> = listOf(),
-        @JsonProperty("sponsor") val sponsor: Sponsor = Sponsor(),
+        @JsonProperty("sponsor") val sponsor: JsonNode?=null,
         @JsonProperty("reported") val reported: Boolean = false,
         @JsonProperty("editable") val editable: Boolean = false,
         @JsonProperty("subscriptionModel") val subscriptionModel: SubscriptionModel = SubscriptionModel(),
@@ -43,13 +44,14 @@ data class VideoModel(
             @JsonProperty("v") val v: Int = 0,
             @JsonProperty("cnt320p") val cnt320p: Int = 0,
             @JsonProperty("valid320p") val valid320p: Int = 0,
-            @JsonProperty("mediaInfo") val mediaInfo: MediaInfo = MediaInfo(),
+            @JsonProperty("mediaInfo") val mediaInfo: MediaInfo? = MediaInfo(),
             @JsonProperty("watermark") val watermark: Boolean = false,
             @JsonProperty("trailer") val trailer: Map<String,Long> = mapOf(),
             @JsonProperty("cdn") val cdn: Int = 0,
             @JsonProperty("video") val video: Map<String,Map<String,String>> = mapOf(),
             @JsonProperty("ml-thumb") val mlThumb: Int = 0,
-            @JsonProperty("ceph-cleaned") val cephCleaned: Int = 0
+            @JsonProperty("ceph-cleaned") val cephCleaned: Int = 0,
+            @JsonProperty("encode-version") val encodeVersion:String? = ""
     ) {
 
         data class MediaInfo(
@@ -99,23 +101,7 @@ data class VideoModel(
     )
 
 
-    data class Sponsor(
-            @JsonProperty("id") val id: Int = 0,
-            @JsonProperty("site") val site: String = "",
-            @JsonProperty("banner") val banner: Banner = Banner(),
-            @JsonProperty("name") val name: String = "",
-            @JsonProperty("message") val message: String = "",
-            @JsonProperty("link") val link: String = "",
-            @JsonProperty("landing") val landing: Int = 0,
-            @JsonProperty("description") val description: String = ""
-    ) {
 
-        data class Banner(
-                @JsonProperty("width") val width: Int = 0,
-                @JsonProperty("height") val height: Int = 0,
-                @JsonProperty("src") val src: String = ""
-        )
-    }
 
 
     data class SubscriptionModel(

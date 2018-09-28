@@ -68,6 +68,6 @@ class XhResolver : LocationMetadataResolver {
     }
 
     private fun VideoModel.extractContentMetadata(): LocationMetadata.ContentMetadata {
-        return LocationMetadata.ContentMetadata(this.title,this.description)
+        return LocationMetadata.ContentMetadata(this.title?:"",this.description)
     }
 }
