@@ -1,9 +1,12 @@
 package io.github.lumue.mc.dlservice.download
 
-import com.github.kittinunf.fuel.Fuel
 import io.github.lumue.mc.dlservice.resolve.LocationMetadata
+import kotlinx.coroutines.experimental.Job
+import kotlinx.coroutines.experimental.async
 import org.apache.http.HttpStatus
+import org.apache.http.client.CookieStore
 import org.apache.http.client.methods.HttpGet
+import org.apache.http.impl.client.BasicCookieStore
 import org.apache.http.impl.client.HttpClientBuilder
 import org.apache.http.message.BasicHeader
 import org.slf4j.LoggerFactory
@@ -16,6 +19,8 @@ class FileDownloader {
 
     private val logger = LoggerFactory.getLogger(this.javaClass.name)
 
+    private val cookieStore: CookieStore =BasicCookieStore()
+
     suspend fun download(m: LocationMetadata.MediaStreamMetadata,
                          targetPath: String,
                          progressHandler: ((readBytes: Long, totalBytes: Long) -> Unit)?): FileDownloadResult {
@@ -23,20 +28,9 @@ class FileDownloader {
         val targetfile = targetPath + File.separator + m.contentType + "." + m.filenameExtension
         logger.debug("downloading from " + m.url + " to " + targetfile)
 
-        ApacheHttpFileDownloader().downloadFile(m,targetfile,progressHandler)
+        val job =  ApacheHttpFileDownloader().downloadFile(m.url, m.headers,targetfile, progressHandler)
 
-//        Fuel.download(m.url)
-//                .allowRedirects(true)
-//                .destination { response, url ->
-//                    File(targetfile)
-//                }.progress { readBytes, totalBytes ->
-//                    logger.debug("$readBytes of $totalBytes downloaded")
-//                    progressHandler?.invoke(readBytes, totalBytes)
-//                    done = readBytes >= totalBytes
-//                }.bodyCallback
-
-
-
+        job.join()
 
         return FileDownloadResult()
     }
@@ -44,72 +38,80 @@ class FileDownloader {
 }
 
 
-class ApacheHttpFileDownloader  {
+class ApacheHttpFileDownloader {
 
-    fun downloadFile(m:LocationMetadata.MediaStreamMetadata, filename: String, byteCountConsumer: ((readBytes: Long, totalBytes: Long) -> Unit)?) {
+    fun downloadFile(url: String, headers: Map<String, String>,filename: String, progressConsumer: ((readBytes: Long, totalBytes: Long) -> Unit)?) : Job{
+
+        var download = async{
+
+            try {
+                val closeableHttpClient = HttpClientBuilder.create()
+                        .disableContentCompression()
+                        .build()
+                closeableHttpClient.use { httpClient ->
+
+                    val get = HttpGet(url)
 
 
-        try {
-            HttpClientBuilder.create().disableContentCompression().build().use { httpClient ->
+                    var resumeAt: Long = 0
 
-                val get = HttpGet(m.url)
+                    val file = File(filename)
+                    if (file.exists()) {
+                        resumeAt = Files.size(file.toPath())
+                    }
 
-                var resumeAt: Long = 0
+                    headers.entries.stream()
+                            .map { h -> BasicHeader(h.key, h.value) }
+                            .forEach { h -> get.addHeader(h) }
 
-                val file = File(filename)
-                if (file.exists()) {
-                    resumeAt = Files.size(file.toPath())
-                }
+                    if (resumeAt > 0L) {
+                        get.addHeader("Range", "bytes=$resumeAt-")
+                    }
 
-                m.headers.entries.stream()
-                        .map{ h -> BasicHeader(h.key, h.value) }
-                        .forEach { h->get.addHeader(h) }
+                    httpClient.execute(get).use { response ->
+                        val status = response.getStatusLine().getStatusCode()
+                        if (status >= 200 && status < 300) {
+                            val entity = response.getEntity()
+                            val expectedSize = entity.contentLength
+                            var append = false
 
-                if (resumeAt > 0L) {
-                    get.addHeader("Range", "bytes=$resumeAt-")
-                }
-
-                httpClient.execute(get).use { response ->
-                    val status = response.getStatusLine().getStatusCode()
-                    if (status >= 200 && status < 300) {
-                        val entity = response.getEntity()
-
-                        var append = false
-
-                        if (resumeAt > 0L) {
-                            if (status != HttpStatus.SC_PARTIAL_CONTENT) {
-                                Files.deleteIfExists(File(filename).toPath())
-                            } else {
-                                append = true
-                                byteCountConsumer?.invoke(resumeAt,m.expectedSize)
-                            }
-                        }
-
-                        var downloadedBytes=resumeAt;
-                        // opens an output stream to save into file
-                        FileOutputStream(filename, append).use { outputStream ->
-                            entity.getContent().use { inputStream ->
-                                var bytesRead: Int
-                                val buffer = ByteArray(BUFFER_SIZE)
-                                bytesRead = inputStream.read(buffer)
-                                while (bytesRead != -1) {
-                                    outputStream.write(buffer, 0, bytesRead)
-                                    downloadedBytes=downloadedBytes+bytesRead
-                                    byteCountConsumer?.invoke(downloadedBytes,m.expectedSize)
-                                    bytesRead = inputStream.read(buffer)
+                            if (resumeAt > 0L) {
+                                if (status != HttpStatus.SC_PARTIAL_CONTENT) {
+                                    Files.deleteIfExists(File(filename).toPath())
+                                } else {
+                                    append = true
                                 }
                             }
+
+                            var downloadedBytes = resumeAt;
+                            FileOutputStream(filename, append).use { outputStream ->
+                                entity.getContent().use { inputStream ->
+                                    var bytesRead: Int
+                                    val buffer = ByteArray(BUFFER_SIZE)
+                                    bytesRead = inputStream.read(buffer)
+                                    while (bytesRead != -1 && isActive) {
+
+                                        outputStream.write(buffer, 0, bytesRead)
+                                        downloadedBytes = downloadedBytes + bytesRead
+                                        progressConsumer?.invoke(downloadedBytes, expectedSize)
+                                        bytesRead = inputStream.read(buffer)
+
+                                    }
+                                }
+                            }
+                        } else {
+                            if (status == HttpStatus.SC_REQUESTED_RANGE_NOT_SATISFIABLE)
+                                Files.deleteIfExists(File(filename).toPath())
+                            throw RuntimeException("Unexpected response status: $status")
                         }
-                    } else {
-                        if (status == HttpStatus.SC_REQUESTED_RANGE_NOT_SATISFIABLE)
-                            Files.deleteIfExists(File(filename).toPath())
-                        throw RuntimeException("Unexpected response status: $status")
                     }
                 }
+            } catch (e: IOException) {
+                throw RuntimeException(e)
             }
-        } catch (e: IOException) {
-            throw RuntimeException(e)
         }
+
+        return download;
 
     }
 

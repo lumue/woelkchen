@@ -2,7 +2,7 @@ package io.github.lumue.mc.dlservice
 
 import io.github.lumue.mc.dlservice.download.FileDownloader
 import io.github.lumue.mc.dlservice.resolve.MediaLocation
-import io.github.lumue.mc.dlservice.resolve.xh.XhResolver
+import io.github.lumue.mc.dlservice.sites.xh.XhResolver
 import kotlinx.coroutines.experimental.Job
 import kotlinx.coroutines.experimental.launch
 import kotlinx.coroutines.experimental.runBlocking
@@ -23,7 +23,6 @@ class XhDownloadTest {
 
 
         runBlocking {
-            val l = MediaLocation(TESTVIDEO_URL, LocalDateTime.now())
             val jobs: List<Job> = List(5) {
                 launch {
                     val l = MediaLocation(TESTVIDEO_URL, LocalDateTime.now())
