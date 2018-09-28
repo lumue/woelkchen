@@ -40,13 +40,16 @@ class FileDownloader {
 
 class ApacheHttpFileDownloader {
 
-    fun downloadFile(url: String, headers: Map<String, String>,filename: String, progressConsumer: ((readBytes: Long, totalBytes: Long) -> Unit)?) : Job{
+    fun downloadFile(url: String,
+                     headers: Map<String, String>,
+                     filename: String,
+                     progressConsumer: ((readBytes: Long, totalBytes: Long) -> Unit)?,
+                     httpClientBuilder: HttpClientBuilder=HttpClientBuilder.create()) : Job{
 
         var download = async{
 
             try {
-                val closeableHttpClient = HttpClientBuilder.create()
-                        .disableContentCompression()
+                val closeableHttpClient = httpClientBuilder
                         .build()
                 closeableHttpClient.use { httpClient ->
 

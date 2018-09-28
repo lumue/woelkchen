@@ -1,16 +1,14 @@
 package io.github.lumue.mc.dlservice.sites.xh
 
-import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
 import getContentLength
-import getJsoupDocument
 import io.github.lumue.mc.dlservice.resolve.LocationMetadata
 import io.github.lumue.mc.dlservice.resolve.LocationMetadataResolver
 import io.github.lumue.mc.dlservice.resolve.MediaLocation
 import org.slf4j.LoggerFactory
 import java.net.URL
 
-class XhResolver : LocationMetadataResolver {
+class XhResolver(val xhHttpClient:XhHttpClient) : LocationMetadataResolver {
 
     val videoModelParser : VideoModelParser=VideoModelParser()
 
@@ -28,26 +26,11 @@ class XhResolver : LocationMetadataResolver {
         )
     }
 
-    private fun MediaLocation.getVideoModelJson(): JsonNode {
-        val initialsJsonString = getInitialsJsonString()
-        val initialsJson = objectMapper.readTree(initialsJsonString)
-        return initialsJson["videoModel"]
-    }
 
     private fun MediaLocation.getVideoModel(): VideoModel{
-        val initialsJsonString = getInitialsJsonString()
-        return videoModelParser.fromString(initialsJsonString)
+        return videoModelParser.fromHtml(xhHttpClient.getContentAsString(url))
     }
 
-    private fun MediaLocation.getInitialsJsonString(): String {
-        val initialsScriptString=this.getJsoupDocument().run {
-            //2. Parses and scrapes the HTML response
-            select("#initials-script").first().dataNodes().first().wholeData
-        }
-        val startOfInitialsJson = initialsScriptString.indexOfFirst { c -> '{' == c }
-        val initialsJsonString = initialsScriptString.substring(startOfInitialsJson)
-        return initialsJsonString
-    }
 
     private fun VideoModel.extractDownloadMetadata(): LocationMetadata.DownloadMetadata {
         val streams = this.sources.mp4.asSequence()

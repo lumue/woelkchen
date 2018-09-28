@@ -2,6 +2,7 @@ package io.github.lumue.mc.dlservice
 
 import io.github.lumue.mc.dlservice.download.FileDownloader
 import io.github.lumue.mc.dlservice.resolve.MediaLocation
+import io.github.lumue.mc.dlservice.sites.xh.XhHttpClient
 import io.github.lumue.mc.dlservice.sites.xh.XhResolver
 import kotlinx.coroutines.experimental.Job
 import kotlinx.coroutines.experimental.launch
@@ -17,6 +18,7 @@ class XhDownloadTest {
 
     private val logger = LoggerFactory.getLogger(this.javaClass.name)
 
+
     @Test
     fun testResolveXhMetadata() {
 
@@ -26,7 +28,7 @@ class XhDownloadTest {
             val jobs: List<Job> = List(5) {
                 launch {
                     val l = MediaLocation(TESTVIDEO_URL, LocalDateTime.now())
-                    val metadata = XhResolver()
+                    val metadata = XhResolver(XhHttpClient())
                             .resolveMetadata(l)
                     logger.info(metadata.toString())
                 }
@@ -38,7 +40,7 @@ class XhDownloadTest {
     @Test
     fun testDownloadXhVideo(){
         val l = MediaLocation(TESTVIDEO_URL, LocalDateTime.now())
-        val metadata = XhResolver()
+        val metadata = XhResolver(XhHttpClient())
                 .resolveMetadata(l)
         runBlocking {
             val progressHandler = fun (p: Long,t:Long) {

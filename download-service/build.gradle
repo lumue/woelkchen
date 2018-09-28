@@ -59,10 +59,10 @@ dependencies {
 	compile 'com.github.kittinunf.fuel:fuel-coroutines:1.15.0'
 	compile group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.5.5'
 
-
+	testCompile group: 'commons-io', name: 'commons-io', version: '2.6'
 	testCompile('org.springframework.boot:spring-boot-starter-test')
 	testCompile('io.projectreactor:reactor-test')
-	testCompile group: 'ch.qos.logback', name: 'logback-classic', version: "$logback_version"
+	testCompile group: 'ch.qos.logback', name: 'logback-classic', version: "1.2.3"
 }
 kotlin {
 	experimental {
