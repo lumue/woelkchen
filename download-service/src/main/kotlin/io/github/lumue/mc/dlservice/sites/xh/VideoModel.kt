@@ -5,7 +5,7 @@ import com.fasterxml.jackson.databind.JsonNode
 
 
 data class VideoModel(
-        @JsonProperty("duration") val duration: Int = 0,
+        @JsonProperty("duration") val duration: Long = 0,
         @JsonProperty("title") val title: String? = "",
         @JsonProperty("pageURL") val pageURL: String = "",
         @JsonProperty("icon") val icon: Any? = Any(),
@@ -120,4 +120,8 @@ data class VideoModel(
             @JsonProperty("verified") val verified: Boolean = false,
             @JsonProperty("name") val name: String = ""
     )
+
+
+
 }
+

@@ -1,5 +1,6 @@
 package io.github.lumue.mc.dlservice.resolve
 
+import java.time.Duration
 import java.time.LocalDateTime
 
 data class MediaLocation(val url: String,
@@ -26,6 +27,16 @@ data class LocationMetadata(val url: String,
 
     enum class ContentType {AUDIO,VIDEO,CONTAINER}
 
-    data class ContentMetadata(val title: String, val desription:String)
+    data class ContentMetadata(val title: String,
+                               val desription:String="",
+                               val tags: Set<Tag> = setOf(),
+                               val actors: Set<Actor> = setOf(),
+                               val duration: Duration = Duration.ZERO,
+                               val views: Int=0
+
+    ){
+        data class Tag(val id: String,val name:String)
+        data class Actor(val id: String,val name: String)
+    }
 
 }
