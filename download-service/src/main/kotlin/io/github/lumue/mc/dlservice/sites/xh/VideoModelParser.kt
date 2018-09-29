@@ -1,7 +1,7 @@
 package io.github.lumue.mc.dlservice.sites.xh
 import com.fasterxml.jackson.databind.ObjectMapper
 import getContentLength
-import io.github.lumue.mc.dlservice.resolve.LocationMetadata
+import io.github.lumue.mc.dlservice.LocationMetadata
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import java.net.URL
@@ -45,7 +45,7 @@ fun VideoModel.extractDownloadMetadata(): LocationMetadata.DownloadMetadata {
 }
 
 fun VideoModel.extractStreamInfo(streamId: String): LocationMetadata.MediaStreamMetadata {
-    val url =  URL(this.sources.mp4[streamId])
+    val url =  URL(this.sources.download[streamId]?.link)
     val expectedSize = url.getContentLength()
     return LocationMetadata.MediaStreamMetadata(streamId, url.toExternalForm(), mapOf(), LocationMetadata.ContentType.CONTAINER,"mp4","mp4", expectedSize)
 }

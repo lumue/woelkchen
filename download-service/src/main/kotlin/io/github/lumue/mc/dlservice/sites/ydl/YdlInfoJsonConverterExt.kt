@@ -1,6 +1,6 @@
 package io.github.lumue.mc.dlservice.sites.ydl
 
-import io.github.lumue.mc.dlservice.resolve.LocationMetadata
+import io.github.lumue.mc.dlservice.LocationMetadata
 import io.github.lumue.ydlwrapper.metadata.single_info_json.Format
 import io.github.lumue.ydlwrapper.metadata.single_info_json.HttpHeaders
 import io.github.lumue.ydlwrapper.metadata.single_info_json.RequestedFormat
@@ -14,7 +14,7 @@ import java.net.URLConnection
 import kotlin.streams.toList
 
 fun YdlInfoJson.toLocationMetadata(): LocationMetadata {
-    return LocationMetadata(this.webpageUrl,this.toContentMetadata(), this.toDownloadMetadata())
+    return LocationMetadata(this.webpageUrl, this.toContentMetadata(), this.toDownloadMetadata())
 }
 
 private fun YdlInfoJson.toDownloadMetadata(): LocationMetadata.DownloadMetadata {

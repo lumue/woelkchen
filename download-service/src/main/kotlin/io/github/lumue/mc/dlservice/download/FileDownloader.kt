@@ -1,6 +1,7 @@
 package io.github.lumue.mc.dlservice.download
 
-import io.github.lumue.mc.dlservice.resolve.LocationMetadata
+import download
+import io.github.lumue.mc.dlservice.LocationMetadata
 import kotlinx.coroutines.experimental.Job
 import kotlinx.coroutines.experimental.async
 import org.apache.http.HttpStatus
@@ -23,7 +24,7 @@ class FileDownloader {
 
     suspend fun download(m: LocationMetadata.MediaStreamMetadata,
                          targetPath: String,
-                         progressHandler: ((readBytes: Long, totalBytes: Long) -> Unit)?): FileDownloadResult {
+                         progressHandler: ((readBytes: Long,time:Long, totalBytes: Long) -> Unit)?): FileDownloadResult {
 
         val targetfile = targetPath + File.separator + m.contentType + "." + m.filenameExtension
         logger.debug("downloading from " + m.url + " to " + targetfile)
@@ -43,7 +44,7 @@ class ApacheHttpFileDownloader {
     fun downloadFile(url: String,
                      headers: Map<String, String>,
                      filename: String,
-                     progressConsumer: ((readBytes: Long, totalBytes: Long) -> Unit)?,
+                     progressConsumer: ((readBytes: Long,time:Long ,totalBytes: Long) -> Unit)?,
                      httpClientBuilder: HttpClientBuilder=HttpClientBuilder.create()) : Job{
 
         var download = async{
@@ -51,64 +52,8 @@ class ApacheHttpFileDownloader {
             try {
                 val closeableHttpClient = httpClientBuilder
                         .build()
-                closeableHttpClient.use { httpClient ->
+                        .download(url, headers, filename, progressConsumer)
 
-                    val get = HttpGet(url)
-
-
-                    var resumeAt: Long = 0
-
-                    val file = File(filename)
-                    if (file.exists()) {
-                        resumeAt = Files.size(file.toPath())
-                    }
-
-                    headers.entries.stream()
-                            .map { h -> BasicHeader(h.key, h.value) }
-                            .forEach { h -> get.addHeader(h) }
-
-                    if (resumeAt > 0L) {
-                        get.addHeader("Range", "bytes=$resumeAt-")
-                    }
-
-                    httpClient.execute(get).use { response ->
-                        val status = response.getStatusLine().getStatusCode()
-                        if (status >= 200 && status < 300) {
-                            val entity = response.getEntity()
-                            val expectedSize = entity.contentLength
-                            var append = false
-
-                            if (resumeAt > 0L) {
-                                if (status != HttpStatus.SC_PARTIAL_CONTENT) {
-                                    Files.deleteIfExists(File(filename).toPath())
-                                } else {
-                                    append = true
-                                }
-                            }
-
-                            var downloadedBytes = resumeAt;
-                            FileOutputStream(filename, append).use { outputStream ->
-                                entity.getContent().use { inputStream ->
-                                    var bytesRead: Int
-                                    val buffer = ByteArray(BUFFER_SIZE)
-                                    bytesRead = inputStream.read(buffer)
-                                    while (bytesRead != -1 && isActive) {
-
-                                        outputStream.write(buffer, 0, bytesRead)
-                                        downloadedBytes = downloadedBytes + bytesRead
-                                        progressConsumer?.invoke(downloadedBytes, expectedSize)
-                                        bytesRead = inputStream.read(buffer)
-
-                                    }
-                                }
-                            }
-                        } else {
-                            if (status == HttpStatus.SC_REQUESTED_RANGE_NOT_SATISFIABLE)
-                                Files.deleteIfExists(File(filename).toPath())
-                            throw RuntimeException("Unexpected response status: $status")
-                        }
-                    }
-                }
             } catch (e: IOException) {
                 throw RuntimeException(e)
             }

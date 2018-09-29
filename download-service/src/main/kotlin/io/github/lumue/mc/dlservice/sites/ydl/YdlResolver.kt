@@ -1,8 +1,8 @@
 package io.github.lumue.mc.dlservice.sites.ydl
 
-import io.github.lumue.mc.dlservice.resolve.LocationMetadata
-import io.github.lumue.mc.dlservice.resolve.LocationMetadataResolver
-import io.github.lumue.mc.dlservice.resolve.MediaLocation
+import io.github.lumue.mc.dlservice.LocationMetadata
+import io.github.lumue.mc.dlservice.LocationMetadataResolver
+import io.github.lumue.mc.dlservice.MediaLocation
 import io.github.lumue.ydlwrapper.download.YdlDownloadTask
 import io.github.lumue.ydlwrapper.metadata.single_info_json.YdlInfoJson
 import kotlinx.coroutines.experimental.newFixedThreadPoolContext

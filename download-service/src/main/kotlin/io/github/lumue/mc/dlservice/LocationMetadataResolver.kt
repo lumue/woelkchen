@@ -1,4 +1,4 @@
-package io.github.lumue.mc.dlservice.resolve
+package io.github.lumue.mc.dlservice
 
 interface LocationMetadataResolver {
 

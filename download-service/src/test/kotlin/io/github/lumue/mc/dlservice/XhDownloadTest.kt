@@ -1,7 +1,6 @@
 package io.github.lumue.mc.dlservice
 
 import io.github.lumue.mc.dlservice.download.FileDownloader
-import io.github.lumue.mc.dlservice.resolve.MediaLocation
 import io.github.lumue.mc.dlservice.sites.xh.XhHttpClient
 import io.github.lumue.mc.dlservice.sites.xh.XhResolver
 import kotlinx.coroutines.experimental.Job
@@ -11,6 +10,7 @@ import kotlinx.coroutines.experimental.runBlocking
 import org.junit.Test
 import org.slf4j.LoggerFactory
 import java.time.LocalDateTime
+import java.util.concurrent.TimeUnit
 
 class XhDownloadTest {
 
@@ -28,9 +28,9 @@ class XhDownloadTest {
             val jobs: List<Job> = List(5) {
                 launch {
                     val l = MediaLocation(TESTVIDEO_URL, LocalDateTime.now())
-                    val metadata = XhResolver(XhHttpClient())
+                    val metadata = XhResolver(XhHttpClient("dirtytom74","ddl85s"))
                             .resolveMetadata(l)
-                    logger.info(metadata.toString())
+                    logger.info(metadata.jsonString())
                 }
             }
             jobs.forEach { it.join() }
@@ -40,13 +40,16 @@ class XhDownloadTest {
     @Test
     fun testDownloadXhVideo(){
         val l = MediaLocation(TESTVIDEO_URL, LocalDateTime.now())
-        val metadata = XhResolver(XhHttpClient())
+        val client = XhHttpClient("dirtytom74", "ddl85s")
+        val metadata = XhResolver(client)
                 .resolveMetadata(l)
         runBlocking {
-            val progressHandler = fun (p: Long,t:Long) {
-                logger.debug("downloaded $p of $t")
+            val progressHandler = fun (p: Long,time:Long,t:Long) {
+                var seconds = TimeUnit.MILLISECONDS.toSeconds(time)
+                if(seconds<1) seconds=1
+                logger.debug("downloaded $p of $t in ${seconds}s. ${p/seconds} b/s")
             }
-            FileDownloader().download(metadata.downloadMetadata.selectedStreams[0], "./", progressHandler )
+            client.download(metadata.downloadMetadata.selectedStreams[0], "./", progressHandler )
         }
 
     }

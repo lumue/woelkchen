@@ -1,8 +1,8 @@
 package io.github.lumue.mc.dlservice.sites.xh
 
-import io.github.lumue.mc.dlservice.resolve.LocationMetadata
-import io.github.lumue.mc.dlservice.resolve.LocationMetadataResolver
-import io.github.lumue.mc.dlservice.resolve.MediaLocation
+import io.github.lumue.mc.dlservice.LocationMetadata
+import io.github.lumue.mc.dlservice.LocationMetadataResolver
+import io.github.lumue.mc.dlservice.MediaLocation
 import org.slf4j.LoggerFactory
 
 

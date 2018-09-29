@@ -1,6 +1,5 @@
 package io.github.lumue.mc.dlservice
 
-import io.github.lumue.mc.dlservice.resolve.MediaLocation
 import io.github.lumue.mc.dlservice.sites.ydl.YdlResolver
 
 import org.junit.Test

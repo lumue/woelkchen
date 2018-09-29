@@ -1,11 +1,16 @@
 package io.github.lumue.mc.dlservice.sites.xh
 
+import download
 import getContentAsString
+import io.github.lumue.mc.dlservice.LocationMetadata
+import io.github.lumue.mc.dlservice.download.ApacheHttpFileDownloader
+import io.github.lumue.mc.dlservice.download.FileDownloadResult
 import org.apache.http.client.CookieStore
 import org.apache.http.client.methods.HttpGet
 import org.apache.http.impl.client.BasicCookieStore
 import org.apache.http.impl.client.HttpClientBuilder
 import org.slf4j.LoggerFactory
+import java.io.File
 
 class XhHttpClient(val username:String ="",val password:String="") {
 
@@ -41,6 +46,18 @@ class XhHttpClient(val username:String ="",val password:String="") {
             }
         }
         logger.debug("cookies after login: "+cookieStore.names())
+    }
+
+    fun download(m: LocationMetadata.MediaStreamMetadata,
+                 targetPath: String,
+                 progressHandler: ((readBytes: Long,time:Long, totalBytes: Long) -> Unit)?): FileDownloadResult {
+
+        val targetfile = targetPath + File.separator + m.contentType + "." + m.filenameExtension
+        logger.debug("downloading from " + m.url + " to " + targetfile)
+
+        httpClientBuilder.build().download(m.url, m.headers,targetfile, progressHandler)
+
+        return FileDownloadResult()
     }
 
     private fun CookieStore.names(): List<String> {
