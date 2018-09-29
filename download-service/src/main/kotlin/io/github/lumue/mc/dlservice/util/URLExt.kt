@@ -1,12 +1,11 @@
-import io.github.lumue.mc.dlservice.MediaLocation
-import io.github.lumue.mc.dlservice.download.ApacheHttpFileDownloader
+import io.github.lumue.mc.dlservice.FileDownloadResult
+import kotlinx.coroutines.experimental.NonCancellable.isActive
 import kotlinx.coroutines.experimental.suspendCancellableCoroutine
+import org.apache.http.Header
 import org.apache.http.HttpStatus
 import org.apache.http.client.methods.HttpGet
 import org.apache.http.impl.client.CloseableHttpClient
 import org.apache.http.message.BasicHeader
-import org.jsoup.Jsoup
-import org.jsoup.nodes.Document
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.FileOutputStream
@@ -18,19 +17,19 @@ import java.nio.charset.Charset
 import java.nio.file.Files
 import kotlin.system.measureTimeMillis
 
-public fun URL.getContentLength(): Long {
+fun URL.getContentLength(): Long {
 
 
     var conn: URLConnection? = null
-    try {
+    return try {
         conn = openConnection()
         if (conn is HttpURLConnection) {
             conn.requestMethod = "HEAD"
         }
         conn!!.getInputStream()
-        return conn.contentLength.toLong()
+        conn.contentLength.toLong()
     } catch (e: IOException) {
-        return -1L
+        -1L
     } finally {
         if (conn is HttpURLConnection) {
             conn.disconnect()
@@ -38,85 +37,125 @@ public fun URL.getContentLength(): Long {
     }
 }
 
-fun MediaLocation.getJsoupDocument(): Document {
-    return Jsoup.connect(this.url).get()
-}
 
-fun CloseableHttpClient.getContentAsString(url: String): String {
-    this.use {
-        val get = HttpGet(url)
-        execute(get).use { response ->
-            if (response.statusLine.statusCode != 200)
-                throw RuntimeException("http error : ${response.statusLine}")
-            val out = ByteArrayOutputStream()
-            response.entity.writeTo(out)
-            return String(out.toByteArray(), Charset.defaultCharset())
+suspend fun CloseableHttpClient.getContentAsString(url: String): String {
+    return suspendCancellableCoroutine {
+        try {
+            val result=
+            this.use { httpClient ->
+                val get = HttpGet(url)
+                httpClient.execute(get).use{ response ->
+                    if (response.statusLine.statusCode != 200)
+                        throw RuntimeException("http error : ${response.statusLine}")
+                    val out = ByteArrayOutputStream()
+                    response.entity.writeTo(out)
+                     String(out.toByteArray(), Charset.defaultCharset())
+                }
+            }
+            it.resume(result)
+        }
+        catch (e:Throwable){
+            it.resumeWithException(e)
         }
     }
 }
 
-fun CloseableHttpClient.download(url: String,
-                                 headers: Map<String, String>,
-                                 filename: String,
-                                 progressConsumer: ((readBytes: Long,time:Long ,totalBytes: Long) -> Unit)?) {
-    this.use { httpClient ->
+fun HttpGet.addHeaders(headers: Map<String,String>){
+    headers.entries.stream()
+            .map { h -> BasicHeader(h.key, h.value) }
+            .forEach { h -> addHeader(h) }
+}
+
+suspend fun CloseableHttpClient.download(url: String,
+                                         headers: Map<String, String>,
+                                         filename: String,
+                                         progressConsumer: ((readBytes: Long, time: Long, totalBytes: Long) -> Unit)?) :FileDownloadResult {
+    use { httpClient ->
 
         val get = HttpGet(url)
+        get.addHeaders(headers)
 
-
-        var resumeAt: Long = 0
 
         val file = File(filename)
         if (file.exists()) {
-            resumeAt = Files.size(file.toPath())
-        }
-
-        headers.entries.stream()
-                .map { h -> BasicHeader(h.key, h.value) }
-                .forEach { h -> get.addHeader(h) }
-
-        if (resumeAt > 0L) {
-            get.addHeader("Range", "bytes=$resumeAt-")
+            get.resumeAt=Files.size(file.toPath())
         }
 
 
+        return suspendCancellableCoroutine {
+            try {
+                httpClient.execute(get).use { response ->
 
-        httpClient.execute(get).use { response ->
-            val status = response.getStatusLine().getStatusCode()
-            if (status >= 200 && status < 300) {
-                val entity = response.getEntity()
-                val expectedSize = entity.contentLength
-                var append = false
-
-                if (resumeAt > 0L) {
-                    if (status != HttpStatus.SC_PARTIAL_CONTENT) {
-                        Files.deleteIfExists(File(filename).toPath())
-                    } else {
-                        append = true
-                    }
-                }
-
-                var downloadedBytes = resumeAt;
-                FileOutputStream(filename, append).use { outputStream ->
-                    entity.getContent().use { inputStream ->
-                        var bytesRead=0
-                        val buffer = ByteArray(4096)
-                        var time= measureTimeMillis { bytesRead = inputStream.read(buffer)}
-                        downloadedBytes=downloadedBytes+bytesRead;
-                        progressConsumer?.invoke(downloadedBytes, time,expectedSize)
-                        while (bytesRead != -1) {
-                            outputStream.write(buffer, 0, bytesRead)
-                            time+= measureTimeMillis { bytesRead = inputStream.read(buffer)}
-                            downloadedBytes = downloadedBytes + bytesRead
-                            progressConsumer?.invoke(downloadedBytes, time,expectedSize)
+                    val status = response.statusLine.statusCode
+                    if (status in 200..299) {
+                        val entity = response.entity
+                        val expectedSize = entity.contentLength
+                        var append = false
+                        var downloadedBytes = get.resumeAt;
+                        if (get.resumeAt > 0L) {
+                            if (status != HttpStatus.SC_PARTIAL_CONTENT) {
+                                Files.deleteIfExists(File(filename).toPath())
+                                downloadedBytes=0L
+                            } else {
+                                append = true
+                            }
                         }
+
+
+                        var time=0L
+                        FileOutputStream(filename, append).use { outputStream ->
+                            entity.content.use { inputStream ->
+                                var bytesRead = 0
+                                val buffer = ByteArray(4096)
+                                time += measureTimeMillis { bytesRead = inputStream.read(buffer) }
+                                downloadedBytes += bytesRead;
+                                progressConsumer?.invoke(downloadedBytes, time, expectedSize)
+                                while (bytesRead != -1 && isActive) {
+                                    time += measureTimeMillis {
+                                        outputStream.write(buffer, 0, bytesRead)
+                                        bytesRead = inputStream.read(buffer)
+                                    }
+                                    downloadedBytes += bytesRead
+                                    progressConsumer?.invoke(downloadedBytes, time, expectedSize)
+                                }
+                            }
+                        }
+                        it.resume(FileDownloadResult(url,filename,expectedSize,downloadedBytes,time))
+                    } else {
+                        if (status == HttpStatus.SC_REQUESTED_RANGE_NOT_SATISFIABLE)
+                            Files.deleteIfExists(File(filename).toPath())
+                        it.resumeWithException(RuntimeException("Unexpected response status: $status"))
                     }
                 }
-            } else {
-                if (status == HttpStatus.SC_REQUESTED_RANGE_NOT_SATISFIABLE)
-                    Files.deleteIfExists(File(filename).toPath())
-                throw RuntimeException("Unexpected response status: $status")
+            } catch (e: Throwable) {
+                it.resumeWithException(e)
             }
         }
     }
+}
+
+private var HttpGet.resumeAt: Long
+    get() {
+        val rangeHeader = findResumeAtRangeHeader()
+        return if(rangeHeader!=null) {
+            rangeHeader.value
+                    .removeSuffix("-")
+                    .removePrefix("bytes=")
+                    .toLong()
+        }
+        else
+            0L
+    }
+    set(value) {
+        val header = findResumeAtRangeHeader()
+        if(header !=null)
+            removeHeader(header)
+        if(value>0)
+            addHeader("Range", "bytes=$value-")
+    }
+
+private fun HttpGet.findResumeAtRangeHeader(): Header? {
+    return getHeaders("Range")
+            .filter { header -> header.value.startsWith("bytes=") && header.value.endsWith("-") }
+            .firstOrNull()
 }

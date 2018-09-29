@@ -4,6 +4,9 @@ import getContentLength
 import io.github.lumue.mc.dlservice.LocationMetadata
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
+import java.lang.RuntimeException
 import java.net.URL
 import java.time.Duration
 
@@ -11,9 +14,18 @@ class VideoModelParser{
 
     val objectMapper : ObjectMapper= ObjectMapper()
 
+    val logger : Logger =LoggerFactory.getLogger(VideoModelParser::class.java)
+
     fun fromHtml(htmlAsString: String):VideoModel{
         val doc= Jsoup.parse(htmlAsString)
-        return objectMapper.readValue(doc.initialsJsonString,PageInitials::class.java).videoModel
+        val initialsJsonString = doc.initialsJsonString
+        return try{
+            objectMapper.readValue(initialsJsonString,PageInitials::class.java).videoModel
+        }catch (e: Throwable){
+            val msg="error parsing $initialsJsonString to PageInitials object"
+            logger.error(msg,e)
+            throw RuntimeException(msg,e)
+        }
     }
 
 

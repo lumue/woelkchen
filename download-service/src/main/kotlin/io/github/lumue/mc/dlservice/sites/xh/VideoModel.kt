@@ -30,7 +30,7 @@ data class VideoModel(
         @JsonProperty("spriteCount") val spriteCount: Int = 0,
         @JsonProperty("playerThumbURL") val playerThumbURL: String = "",
         @JsonProperty("sources") val sources: Sources = Sources(),
-        @JsonProperty("dimensions") val dimensions: Dimensions = Dimensions(),
+        @JsonProperty("dimensions") val dimensions: JsonNode?=null,
         @JsonProperty("categories") val categories: List<Category> = listOf(),
         @JsonProperty("sponsor") val sponsor: JsonNode?=null,
         @JsonProperty("reported") val reported: Boolean = false,
@@ -39,31 +39,7 @@ data class VideoModel(
         @JsonProperty("author") val author: Author = Author()
 ) {
 
-    data class Dimensions(
-            @JsonProperty("ext") val ext: String = "",
-            @JsonProperty("v") val v: Int = 0,
-            @JsonProperty("cnt320p") val cnt320p: Int = 0,
-            @JsonProperty("valid320p") val valid320p: Int = 0,
-            @JsonProperty("mediaInfo") val mediaInfo: MediaInfo? = MediaInfo(),
-            @JsonProperty("watermark") val watermark: Boolean = false,
-            @JsonProperty("trailer") val trailer: Map<String,Long> = mapOf(),
-            @JsonProperty("cdn") val cdn: Int = 0,
-            @JsonProperty("video") val video: Map<String,Map<String,String>> = mapOf(),
-            @JsonProperty("ml-thumb") val mlThumb: Int = 0,
-            @JsonProperty("ceph-cleaned") val cephCleaned: Int = 0,
-            @JsonProperty("encode-version") val encodeVersion:String? = ""
-    ) {
 
-        data class MediaInfo(
-                @JsonProperty("keyframe") val keyframe: Int = 0
-        )
-
-
-
-
-
-
-    }
 
 
     data class Category(
@@ -78,7 +54,8 @@ data class VideoModel(
 
     data class Sources(
             @JsonProperty("download") val download: Map<String,Download> = mapOf(),
-            @JsonProperty("mp4") val mp4: Map<String,String> = mapOf()
+            @JsonProperty("mp4") val mp4: Map<String,String> = mapOf(),
+            @JsonProperty("flv") val flv: Map<String,String>? = mapOf()
     ) {
 
 

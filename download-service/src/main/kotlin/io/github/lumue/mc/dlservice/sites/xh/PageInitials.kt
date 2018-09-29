@@ -12,7 +12,7 @@ data class PageInitials(
         @JsonProperty("xplayerSettings") val xplayerSettings: JsonNode? = null,
         @JsonProperty("xplayerPluginSettings") val xplayerPluginSettings: JsonNode? = null,
         @JsonProperty("isVideoViewDurationNeeded") val isVideoViewDurationNeeded: Boolean = false,
-        @JsonProperty("partnersCounter") val partnersCounter: PartnersCounter = PartnersCounter(),
+        @JsonProperty("partnersCounter") val partnersCounter: JsonNode? = null,
         @JsonProperty("downloadNoDialog") val downloadNoDialog: Boolean = false,
         @JsonProperty("downloadBanner") val downloadBanner: JsonNode? = null,
         @JsonProperty("plAds") val plAds:  JsonNode? = null,
@@ -21,14 +21,14 @@ data class PageInitials(
         @JsonProperty("vrStats") val vrStats: Boolean = false,
         @JsonProperty("urls") val urls:  JsonNode? = null,
         @JsonProperty("camsData") val camsData: JsonNode? = null,
-        @JsonProperty("camsDataTagName") val camsDataTagName: String = "",
+        @JsonProperty("camsDataTagName") val camsDataTagName: String? = "",
         @JsonProperty("stripchatWidgetSimilarModelsExperiment") val stripchatWidgetSimilarModelsExperiment:  JsonNode? = null,
         @JsonProperty("downloadVRApp") val downloadVRApp: Boolean = false,
         @JsonProperty("favoritesVideoCollectionsCollection") val favoritesVideoCollectionsCollection:  JsonNode? = null,
         @JsonProperty("favoriteEntity") val favoriteEntity: Any? = Any(),
         @JsonProperty("defaultVideoCollectionId") val defaultVideoCollectionId: String? = "",
         @JsonProperty("options") val options: JsonNode? = null,
-        @JsonProperty("mlVideoRelated") val mlVideoRelated: MlVideoRelated = MlVideoRelated(),
+        @JsonProperty("mlVideoRelated") val mlVideoRelated: MlVideoRelated? = MlVideoRelated(),
         @JsonProperty("userComment") val userComment: UserComment? = UserComment(),
         @JsonProperty("gaSettings") val gaSettings: GaSettings = GaSettings(),
         @JsonProperty("staticURL") val staticURL: String = "",
@@ -44,7 +44,8 @@ data class PageInitials(
         @JsonProperty("frontStats") val frontStats: Boolean = false,
         @JsonProperty("notificationsModel") val notificationsModel: NotificationsModel? = NotificationsModel(),
         @JsonProperty("userId") val userId: Int? = 0,
-        @JsonProperty("webpushEnabled") val webpushEnabled:  JsonNode? = null
+        @JsonProperty("webpushEnabled") val webpushEnabled:  JsonNode? = null,
+        @JsonProperty("stripchatWidgetSimilarModels") val stripchatWidgetSimilarModels:  JsonNode? = null
 ) {
 
 
@@ -67,16 +68,18 @@ data class PageInitials(
             @JsonProperty("text") val text: String = "",
             @JsonProperty("created") val created: Int = 0,
             @JsonProperty("metaItemprop") val metaItemprop: Boolean = false,
-            @JsonProperty("author") val author: Author = Author()
+            @JsonProperty("author") val author: Author = Author(),
+            @JsonProperty("replyTo") val replyTo:  JsonNode? = null
+
     ) {
 
         data class Author(
                 @JsonProperty("lastActive") val lastActive: Any? = Any(),
                 @JsonProperty("editable") val editable: Boolean = false,
                 @JsonProperty("vip") val vip: Boolean = false,
-                @JsonProperty("personalInfo") val personalInfo: PersonalInfo = PersonalInfo(),
+                @JsonProperty("personalInfo") val personalInfo: PersonalInfo? = PersonalInfo(),
                 @JsonProperty("modelName") val modelName: String = "",
-                @JsonProperty("thumbURL") val thumbURL: String = "",
+                @JsonProperty("thumbURL") val thumbURL: String? = "",
                 @JsonProperty("isOnline") val isOnline: Boolean = false,
                 @JsonProperty("id") val id: Int = 0,
                 @JsonProperty("pageURL") val pageURL: String = "",
@@ -86,9 +89,9 @@ data class PageInitials(
         ) {
 
             data class PersonalInfo(
-                    @JsonProperty("gender") val gender: Gender = Gender(),
+                    @JsonProperty("gender") val gender: Gender? = Gender(),
                     @JsonProperty("orientation") val orientation: Any? = Any(),
-                    @JsonProperty("geo") val geo: Geo = Geo(),
+                    @JsonProperty("geo") val geo: Geo? = Geo(),
                     @JsonProperty("birthday") val birthday: Long= 0
             ) {
 
@@ -100,8 +103,8 @@ data class PageInitials(
 
 
                 data class Geo(
-                        @JsonProperty("countryCode") val countryCode: String = "",
-                        @JsonProperty("countryName") val countryName: String = ""
+                        @JsonProperty("countryCode") val countryCode: String? = "",
+                        @JsonProperty("countryName") val countryName: String? = ""
                 )
             }
         }
@@ -121,12 +124,6 @@ data class PageInitials(
     )
 
 
-
-
-    data class PartnersCounter(
-            @JsonProperty("server") val server: String = "",
-            @JsonProperty("counter") val counter: Boolean = false
-    )
 
 
     data class MlVideoRelated(

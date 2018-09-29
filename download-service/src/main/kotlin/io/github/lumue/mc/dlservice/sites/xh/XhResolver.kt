@@ -12,7 +12,7 @@ class XhResolver(val xhHttpClient:XhHttpClient) : LocationMetadataResolver {
 
     private val logger = LoggerFactory.getLogger(this.javaClass.name)
 
-    override fun resolveMetadata(l: MediaLocation): LocationMetadata {
+    override suspend fun resolveMetadata(l: MediaLocation): LocationMetadata {
         logger.debug("resolving metadata for location "+l)
         val videoModelJson = l.getVideoModel()
         return LocationMetadata(
@@ -23,8 +23,9 @@ class XhResolver(val xhHttpClient:XhHttpClient) : LocationMetadataResolver {
     }
 
 
-    private fun MediaLocation.getVideoModel(): VideoModel{
-        return videoModelParser.fromHtml(xhHttpClient.getContentAsString(url))
+    private suspend fun MediaLocation.getVideoModel(): VideoModel{
+        val htmlAsString = xhHttpClient.getContentAsString(url.replace("//de.","//"))
+        return videoModelParser.fromHtml(htmlAsString)
     }
 
 

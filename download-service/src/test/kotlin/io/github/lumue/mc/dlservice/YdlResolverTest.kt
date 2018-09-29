@@ -1,6 +1,7 @@
 package io.github.lumue.mc.dlservice
 
 import io.github.lumue.mc.dlservice.sites.ydl.YdlResolver
+import kotlinx.coroutines.experimental.runBlocking
 
 import org.junit.Test
 import org.slf4j.LoggerFactory
@@ -14,12 +15,13 @@ class YdlResolverTest {
 
     @Test
     fun testResolveYoutubeMetadata() {
-                    val l = MediaLocation(GETDOWN_TESTVIDEO_URL, LocalDateTime.now())
+        runBlocking {
+            val l = MediaLocation(GETDOWN_TESTVIDEO_URL, LocalDateTime.now())
 
-                            val metadata = YdlResolver()
-                                    .resolveMetadata(l)
-                            logger.info(metadata.toString())
-
+            val metadata = YdlResolver()
+                    .resolveMetadata(l)
+            logger.info(metadata.toString())
+        }
     }
 
 

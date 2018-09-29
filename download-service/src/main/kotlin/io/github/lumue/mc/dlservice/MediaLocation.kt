@@ -4,9 +4,7 @@ import java.time.Duration
 import java.time.LocalDateTime
 
 data class MediaLocation(val url: String,
-                         val added: LocalDateTime) {
-
-}
+                         val added: LocalDateTime = LocalDateTime.now())
 
 data class LocationMetadata(val url: String,
                             val contentMetadata: ContentMetadata,
@@ -28,7 +26,7 @@ data class LocationMetadata(val url: String,
     enum class ContentType {AUDIO,VIDEO,CONTAINER}
 
     data class ContentMetadata(val title: String,
-                               val desription:String="",
+                               val description:String="",
                                val tags: Set<Tag> = setOf(),
                                val actors: Set<Actor> = setOf(),
                                val duration: Duration = Duration.ZERO,
