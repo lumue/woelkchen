@@ -6,8 +6,9 @@ import org.springframework.kotlin.experimental.coroutine.EnableCoroutine
 
 @SpringBootApplication
 @EnableCoroutine
-class DownloadserviceApplication
+class DownloadserviceApplication {
 
-fun main(args: Array<String>) {
-    runApplication<DownloadserviceApplication>(*args)
+    fun main(args: Array<String>) {
+        runApplication<DownloadserviceApplication>(*args)
+    }
 }

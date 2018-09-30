@@ -82,7 +82,7 @@ fun main(args: Array<String>) {
 
 private fun JsonNode.isXhamsterInfoJson(): Boolean {
     val node = webpageUrl
-    if (node == null || !node.isTextual)
+    if ( !node.isTextual)
         return false
 
     return node.textValue().contains("xhamster.com")

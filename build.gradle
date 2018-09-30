@@ -16,6 +16,10 @@ allprojects {
 		repositories {
 			mavenCentral()
 		}
+		ext {
+			kotlinVersion = '1.2.70'
+			springBootVersion = '2.0.5.RELEASE'
+		}
 
 	}
 	repositories {
