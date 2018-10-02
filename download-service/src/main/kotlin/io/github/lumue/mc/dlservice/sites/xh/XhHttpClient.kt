@@ -14,7 +14,6 @@ import org.slf4j.LoggerFactory
 import java.io.File
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicBoolean
-import kotlin.coroutines.experimental.suspendCoroutine
 
 class XhHttpClient(val username: String = "", val password: String = "") {
 
