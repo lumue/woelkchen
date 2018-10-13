@@ -1,9 +1,10 @@
 package io.github.lumue.mc.dlservice
 
-interface FileDownloader {
-    suspend fun download(m: LocationMetadata,
+interface FileDownload {
+    suspend operator fun  invoke(m: LocationMetadata,
                          targetPath: String,
-                         progressHandler: ((readBytes: Long, time: Long, totalBytes: Long) -> Unit)?): FileDownloadResult
+                         progressHandler: ((readBytes: Long, time: Long, totalBytes: Long) -> Unit)?):
+            FileDownloadResult
 }
 
 data class FileDownloadResult(val url: String,

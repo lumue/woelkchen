@@ -42,7 +42,7 @@ data class PageInitials(
         @JsonProperty("isDesktop") val isDesktop: Boolean = false,
         @JsonProperty("promo") val promo: String = "",
         @JsonProperty("frontStats") val frontStats: Boolean = false,
-        @JsonProperty("notificationsModel") val notificationsModel: NotificationsModel? = NotificationsModel(),
+        @JsonProperty("notificationsModel") val notificationsModel: JsonNode? = null,
         @JsonProperty("userId") val userId: Int? = 0,
         @JsonProperty("webpushEnabled") val webpushEnabled:  JsonNode? = null,
         @JsonProperty("stripchatWidgetSimilarModels") val stripchatWidgetSimilarModels:  JsonNode? = null
