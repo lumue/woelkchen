@@ -20,17 +20,17 @@ import kotlin.coroutines.experimental.CoroutineContext
 import kotlin.io.FileTreeWalk
 
 
-val objectMapper: ObjectMapper = ObjectMapper()
+private val objectMapper: ObjectMapper = ObjectMapper()
 
-val xhHttpClient: XhHttpClient = XhHttpClient("dirtytom74", "ddl85s")
+private val xhHttpClient: XhHttpClient = XhHttpClient("dirtytom74", "ddl85s")
 
-val xhResolver: XhResolver = XhResolver(xhHttpClient)
+private val xhResolver: XhResolver = XhResolver(xhHttpClient)
 
-val locationMetadataWriter: LocationMetadataWriter = LocationMetadataWriter(objectMapper)
+private val locationMetadataWriter: LocationMetadataWriter = LocationMetadataWriter(objectMapper)
 
-val logger: Logger = LoggerFactory.getLogger("io.github.lumue.mc.dlservice.util.RefreshXhamsterMetadataTask")
+private val logger: Logger = LoggerFactory.getLogger("io.github.lumue.mc.dlservice.util.RefreshXhamsterMetadataTask")
 
-val coroutineContext : CoroutineContext= newFixedThreadPoolContext(30,"load-meta-json-worker")
+private val threadpoolContext : CoroutineContext= newFixedThreadPoolContext(30,"load-meta-json-worker")
 
 fun main(args: Array<String>) {
 
@@ -48,7 +48,7 @@ fun main(args: Array<String>) {
         }
 
         val consumer = List(20) {
-            async (coroutineContext){
+            async (threadpoolContext){
                 for (infojsonfile in producer) {
                     try {
                         logger.debug("processing $infojsonfile")
