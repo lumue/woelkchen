@@ -1,5 +1,3 @@
-# kodi-service
+# woelkchen
 
- * provide CORS enabled http and websocket access to the kodi jsonrpc api
- * provide a simple rest api for kodi
- * distribute and react to metadata and file events to/from filescanner and getdown
+ * wrap up all the various services to manage home stuff like media directory, home automation, etc.
