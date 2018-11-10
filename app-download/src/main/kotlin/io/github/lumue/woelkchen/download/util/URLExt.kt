@@ -1,4 +1,3 @@
-import io.github.lumue.woelkchen.download.FileDownloadResult
 import kotlinx.coroutines.experimental.NonCancellable.isActive
 import kotlinx.coroutines.experimental.suspendCancellableCoroutine
 import org.apache.http.Header

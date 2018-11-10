@@ -1,9 +1,10 @@
 package io.github.lumue.woelkchen.download.sites.xh
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.databind.JsonNode
 
-
+@JsonIgnoreProperties(ignoreUnknown = true)
 data class PageInitials(
         @JsonProperty("visitFavorite") val visitFavorite: Boolean = false,
         @JsonProperty("videoModel") val videoModel: VideoModel=VideoModel(),

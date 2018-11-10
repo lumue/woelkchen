@@ -3,15 +3,12 @@ package io.github.lumue.woelkchen.download
 import download
 import getContentAsString
 import kotlinx.coroutines.experimental.delay
-import kotlinx.coroutines.experimental.runBlocking
 import kotlinx.coroutines.experimental.suspendCancellableCoroutine
 import org.apache.http.client.CookieStore
-import org.apache.http.client.methods.HttpGet
 import org.apache.http.impl.client.BasicCookieStore
 import org.apache.http.impl.client.CloseableHttpClient
 import org.apache.http.impl.client.HttpClientBuilder
 import org.slf4j.LoggerFactory
-import sun.security.jgss.GSSUtil.login
 import java.io.File
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicBoolean

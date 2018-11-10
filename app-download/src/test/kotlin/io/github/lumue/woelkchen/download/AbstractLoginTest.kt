@@ -1,16 +1,27 @@
-package io.github.lumue.woelkchen.download.sites.xh
+package io.github.lumue.woelkchen.download
 
 import kotlinx.coroutines.experimental.Job
 import kotlinx.coroutines.experimental.launch
 import kotlinx.coroutines.experimental.runBlocking
 import org.junit.Test
 
-class XhHttpClientTest {
+abstract class AbstractLoginTest
+{
+    protected lateinit var client: BasicHttpClient
+
 
     @Test
-    fun testLogin() {
+    fun testLogin(){
         runBlocking {
-            val client = XhHttpClient("dirtytom74", "ddl85s")
+            client.login()
+        }
+        assert(client.loggedIn)
+    }
+
+    @Test
+    fun testConcurrentLogin() {
+        runBlocking {
+
             val jobs: List<Job> = List(10) {
                 launch {
                     client.login()
@@ -21,4 +32,7 @@ class XhHttpClientTest {
 
         }
     }
+
+
+
 }

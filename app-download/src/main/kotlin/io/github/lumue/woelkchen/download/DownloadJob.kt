@@ -6,8 +6,6 @@ class DownloadJob(
         val writeMetadataToFile: Boolean=true,
         val workDir:String=".") {
 
-    var locationMetadata: io.github.lumue.woelkchen.download.LocationMetadata?=null
-
     var downloadResult: io.github.lumue.woelkchen.download.FileDownloadResult?= null
 
 

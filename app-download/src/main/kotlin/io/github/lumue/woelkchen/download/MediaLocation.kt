@@ -1,11 +1,19 @@
 package io.github.lumue.woelkchen.download
 
+import com.fasterxml.jackson.annotation.JsonCreator
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.annotation.JsonProperty
 import java.time.Duration
 import java.time.LocalDateTime
 
-data class MediaLocation(val url: String,
-                         val added: LocalDateTime = LocalDateTime.now())
+@JsonIgnoreProperties(ignoreUnknown = true)
+data class MediaLocation( val url: String,
+                          val added: LocalDateTime? = LocalDateTime.now()){
+    @JsonCreator
+    constructor(@JsonProperty("url") url: String) :
+            this(url,LocalDateTime.now())
+
+}
 
 data class LocationMetadata(@JsonProperty("url") val url: String,
                             @JsonProperty("contentMetadata") val contentMetadata: ContentMetadata,

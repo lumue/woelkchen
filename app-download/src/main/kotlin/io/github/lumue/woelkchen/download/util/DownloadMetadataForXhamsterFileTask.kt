@@ -18,9 +18,7 @@ import kotlin.coroutines.experimental.CoroutineContext
 
 private val objectMapper: ObjectMapper = ObjectMapper().registerModule(JavaTimeModule())
 
-private val xhHttpClient: XhHttpClient = XhHttpClient("dirtytom74", "ddl85s")
-
-private val xhResolver: XhResolver = XhResolver(xhHttpClient)
+private val xhResolver: XhResolver = XhResolver(XhHttpClient())
 
 private val locationMetadataWriter: LocationMetadataWriter = LocationMetadataWriter(objectMapper)
 
