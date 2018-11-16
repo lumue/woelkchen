@@ -5,7 +5,7 @@ import io.github.lumue.woelkchen.download.ResolveMetadataStep
 import io.github.lumue.woelkchen.download.MediaLocation
 import io.github.lumue.ydlwrapper.download.YdlDownloadTask
 import io.github.lumue.ydlwrapper.metadata.single_info_json.YdlInfoJson
-import kotlinx.coroutines.experimental.newFixedThreadPoolContext
+import kotlinx.coroutines.newFixedThreadPoolContext
 import org.slf4j.LoggerFactory
 
 class YdlResolver : ResolveMetadataStep {

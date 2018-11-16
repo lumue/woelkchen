@@ -1,6 +1,9 @@
 package io.github.lumue.woelkchen.download
 
+import kotlinx.coroutines.InternalCoroutinesApi
+
 class BasicHttpDownload(private val httpClient: BasicHttpClient): io.github.lumue.woelkchen.download.DownloadFileStep {
+    @InternalCoroutinesApi
     override suspend fun invoke(m: LocationMetadata,
                                 targetPath: String,
                                 progressHandler: ((readBytes: Long, time: Long, totalBytes: Long) -> Unit)?)

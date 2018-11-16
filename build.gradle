@@ -1,7 +1,6 @@
 
-
 task wrapper(type: Wrapper) {
-	gradleVersion = '4.4'
+	gradleVersion = '4.10.2'
 }
 
 allprojects {
@@ -17,8 +16,8 @@ allprojects {
 			mavenCentral()
 		}
 		ext {
-			kotlinVersion = '1.2.71'
-			springBootVersion = '2.0.5.RELEASE'
+			kotlinVersion = '1.3.10'
+			springBootVersion = '2.1.0.RELEASE'
 		}
 
 	}
@@ -36,7 +35,8 @@ allprojects {
 		targetCompatibility = jdk_version
 	}
 
-
+	group = 'io.github.lumue.woelkchen'
+	version = '0.0.1-SNAPSHOT'
 
 	apply plugin: 'idea'
 

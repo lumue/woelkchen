@@ -2,8 +2,9 @@ package io.github.lumue.woelkchen.download
 
 import download
 import getContentAsString
-import kotlinx.coroutines.experimental.delay
-import kotlinx.coroutines.experimental.suspendCancellableCoroutine
+import kotlinx.coroutines.InternalCoroutinesApi
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.suspendCancellableCoroutine
 import org.apache.http.client.CookieStore
 import org.apache.http.impl.client.BasicCookieStore
 import org.apache.http.impl.client.CloseableHttpClient
@@ -12,11 +13,16 @@ import org.slf4j.LoggerFactory
 import java.io.File
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicBoolean
+import kotlin.coroutines.resume
+import kotlin.coroutines.resumeWithException
 
 open class BasicHttpClient(val password: String = "",
                            val username: String = "",
-                           val cookieStore: CookieStore = BasicCookieStore(),
-                           val performLoginHttpCall: (p: String, u: String, hc: CloseableHttpClient) -> Any
+                           private val cookieStore: CookieStore = BasicCookieStore(),
+                           val performLoginHttpCall: (p: String, u: String, hc: CloseableHttpClient) -> Any=fun(_: String, _: String, _: CloseableHttpClient) {},
+                           val hasAuthenticatedUserCall: (cs: CookieStore)->Boolean= fun (_: CookieStore) : Boolean{
+    return true
+}
 
 ) {
     val logger = LoggerFactory.getLogger(BasicHttpClient::class.java)!!
@@ -27,8 +33,10 @@ open class BasicHttpClient(val password: String = "",
 
     val loggedIn: Boolean
         get():Boolean {
-            return cookieStore.names().contains("UID")
+            return hasAuthenticatedUserCall(cookieStore)
         }
+
+
 
     val loggingIn: AtomicBoolean = AtomicBoolean(false)
     suspend fun getContentAsString(url: String): String {
@@ -47,7 +55,7 @@ open class BasicHttpClient(val password: String = "",
 
         while (!loggingIn.compareAndSet(false, true)) {
             logger.debug("login already started. waiting...")
-            delay(1, TimeUnit.SECONDS)
+            delay(TimeUnit.SECONDS.toMillis(1))
         }
 
         if (!loggedIn) {
@@ -70,6 +78,7 @@ open class BasicHttpClient(val password: String = "",
     }
 
 
+    @InternalCoroutinesApi
     suspend fun download(m: LocationMetadata,
                          targetPath: String,
                          progressHandler: ((readBytes: Long, time: Long, totalBytes: Long) -> Unit)?): FileDownloadResult {
@@ -85,11 +94,12 @@ open class BasicHttpClient(val password: String = "",
         return httpClientBuilder.build().download(m.downloadMetadata.selectedStreams[0].url, m.downloadMetadata.selectedStreams[0].headers, targetfile, progressHandler)
     }
 
-    protected fun CookieStore.names(): List<String> {
-        var cookienames = mutableListOf<String>()
-        cookies.forEach({
-            cookienames.add(it.name)
-        })
-        return cookienames
-    }
+}
+
+fun CookieStore.names(): List<String> {
+    var cookienames = mutableListOf<String>()
+    cookies.forEach({
+        cookienames.add(it.name)
+    })
+    return cookienames
 }

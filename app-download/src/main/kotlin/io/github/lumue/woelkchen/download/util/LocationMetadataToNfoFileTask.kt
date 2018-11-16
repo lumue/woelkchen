@@ -6,12 +6,12 @@ import io.github.lumue.nfotools.Movie
 import io.github.lumue.woelkchen.download.LocationMetadataReader
 import io.github.lumue.woelkchen.download.isMetadataJson
 import io.github.lumue.woelkchen.download.locationMetadataFileSuffix
-import kotlinx.coroutines.experimental.newFixedThreadPoolContext
+import kotlinx.coroutines.newFixedThreadPoolContext
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
 import javax.xml.bind.JAXBContext
-import kotlin.coroutines.experimental.CoroutineContext
+import kotlin.coroutines.CoroutineContext
 
 
 private val objectMapper: ObjectMapper = ObjectMapper().registerModule(JavaTimeModule())

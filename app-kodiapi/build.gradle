@@ -1,0 +1,136 @@
+buildscript {
+	
+	repositories {
+		mavenCentral()
+	}
+	dependencies {
+		classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+		classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
+	}
+}
+
+apply plugin: 'kotlin'
+apply plugin: 'eclipse'
+apply plugin: 'org.springframework.boot'
+apply plugin: 'io.spring.dependency-management'
+apply plugin: 'org.jetbrains.kotlin.jvm'
+
+
+repositories {
+	mavenCentral()
+}
+
+
+dependencies {
+
+	compile project(':web-kodirater')
+
+	compile('org.springframework.boot:spring-boot-starter-webflux')
+	compile('org.springframework.boot:spring-boot-starter-integration')
+	compile('org.springframework.boot:spring-boot-starter-actuator')
+	compile 'io.micrometer:micrometer-registry-prometheus:latest.release'
+	compile("org.springframework.integration:spring-integration-websocket")
+	compile("org.springframework.integration:spring-integration-webflux")
+	compile group: 'org.apache.commons', name: 'commons-collections4', version: '4.1'
+
+
+	runtime('org.glassfish.tyrus.bundles:tyrus-standalone-client:1.13.1')
+
+	testCompile('org.springframework.boot:spring-boot-starter-test')
+	testCompile('io.projectreactor:reactor-test')
+	compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
+}
+
+compileKotlin {
+	kotlinOptions {
+		jvmTarget = "1.8"
+	}
+}
+compileTestKotlin {
+	kotlinOptions {
+		jvmTarget = "1.8"
+	}
+}
+
+
+task docker(dependsOn: build) {
+
+	dependsOn 'dockerBuild'
+
+}
+
+task dockerBuild(type: Exec){
+	def stageDir = file(project.buildDir.absolutePath + '/docker')
+
+	workingDir stageDir
+	executable = 'docker'
+	args=['build', '-t', "lumue/kodi-api-service:${project.version}", '.']
+
+	doFirst {
+		copy {
+			from jar
+			into stageDir
+		}
+		copy {
+			from file('src/main/docker/Dockerfile')
+			into stageDir
+		}
+	}
+
+}
+
+task dockerRun(type: Exec){
+
+	dependsOn 'dockerBuild'
+
+	def stageDir = file(project.buildDir.absolutePath + '/docker')
+
+	workingDir stageDir
+	executable = 'docker'
+	args=['run','-d',
+	      '--name',"kodi-api-service_${project.version}",
+	      '-p','8001:8001',
+	      "lumue/kodi-api-service:${project.version}"]
+
+	doLast{
+		sleep(10*1000)
+	}
+
+}
+
+task dockerStop(type: Exec){
+
+	def stageDir = file(project.buildDir.absolutePath + '/docker')
+
+	workingDir stageDir
+	executable = 'docker'
+	args=['stop',"kodi-api-service_${project.version}"]
+
+	ignoreExitValue true
+
+}
+
+task dockerRemove(type: Exec){
+
+	dependsOn 'dockerStop'
+
+	def stageDir = file(project.buildDir.absolutePath + '/docker')
+
+	workingDir stageDir
+	executable = 'docker'
+	args=['rm','-f',"kodi-api-service_${project.version}"]
+
+	ignoreExitValue true
+}
+
+task dockerTagLatest(type: Exec){
+
+	mustRunAfter 'dockerBuild'
+
+	def stageDir = file(project.buildDir.absolutePath + '/docker')
+
+	workingDir stageDir
+	executable = 'docker'
+	args= ['tag', "lumue/kodi-api-service:${project.version}", 'lumue/kodi-api-service:latest']
+
+}

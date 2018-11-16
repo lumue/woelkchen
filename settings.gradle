@@ -1,7 +1,9 @@
-rootProject.name = 'mediacenter-services'
+rootProject.name = 'woelkchen'
 
 include (
-		'kodi-api-service',
-		'download-service',
-		'webclient'
+		'lib-shared',
+		'app-kodiapi',
+		'app-download',
+		'app-media',
+		'web-kodirater'
 )

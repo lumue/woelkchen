@@ -1,0 +1,9 @@
+{"extName": {
+   "message": "download",
+   "description": "Extension name"},
+ "extDesc": {
+   "message": "download chrome extension",
+   "description": "Extension description"},
+ "openContextMenuTitle": {
+   "message": "download",
+   "description": "context menu button text"}}

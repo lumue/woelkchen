@@ -7,12 +7,12 @@ import io.github.lumue.woelkchen.download.LocationMetadataWriter
 import io.github.lumue.woelkchen.download.MediaLocation
 import io.github.lumue.woelkchen.download.sites.xh.XhHttpClient
 import io.github.lumue.woelkchen.download.sites.xh.XhResolver
-import kotlinx.coroutines.experimental.newFixedThreadPoolContext
+import kotlinx.coroutines.newFixedThreadPoolContext
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.io.File
 import java.io.FileOutputStream
-import kotlin.coroutines.experimental.CoroutineContext
+import kotlin.coroutines.CoroutineContext
 
 
 private val objectMapper: ObjectMapper = ObjectMapper().registerModule(JavaTimeModule())
