@@ -1,12 +1,10 @@
 package io.github.lumue.woelkchen.download
 
-import io.github.lumue.woelkchen.download.sites.xh.XhHttpClient
-import io.github.lumue.woelkchen.download.sites.xh.XhResolver
+import io.github.lumue.woelkchen.download.sites.ph.PhSite
+import io.github.lumue.woelkchen.download.sites.xh.XhSite
 import org.slf4j.LoggerFactory
 import org.springframework.kotlin.experimental.coroutine.annotation.Coroutine
 import org.springframework.stereotype.Service
-import java.io.File
-import java.io.FileOutputStream
 import java.util.concurrent.TimeUnit
 
 @Service
@@ -15,10 +13,8 @@ open class DownloadService {
 
     private val logger = LoggerFactory.getLogger(DownloadService::class.java)
 
-    val httpClient: XhHttpClient = XhHttpClient("dirtytom74", "ddl85s")
+    private val clients: Map<String,SiteClient> =mapOf("xhamster" to XhSite(),"pornhub" to PhSite())
 
-    val downloader: io.github.lumue.woelkchen.download.DownloadFileStep = BasicHttpDownload(httpClient)
-    val resolver: ResolveMetadataStep = XhResolver(httpClient)
 
     fun progressHandler(name: String) = fun(p: Long, time: Long, t: Long) {
         var seconds = TimeUnit.MILLISECONDS.toSeconds(time)
@@ -28,14 +24,15 @@ open class DownloadService {
 
     @Coroutine("downloadDispatcher")
     open suspend fun download(url: MediaLocation) {
-        val metadata = resolver.resolveMetadata(url)
-        val downloadResult = downloader(metadata,
-                "/mnt/nasbox/media/adult/incoming",
-                progressHandler(metadata.contentMetadata.title)
-        )
-        val out = FileOutputStream(downloadResult.filename + ".meta.json")
-        LocationMetadataWriter().write(metadata, out)
-        out.close()
+        val client=clients[url.extractSiteKey()]!!
+        val metadata= client.retrieveMetadata(url)
+        client.downloadContent(metadata,"/mnt/nasbox/media/adult/incoming",progressHandler(metadata.contentMetadata.title))
     }
 
+}
+
+private fun MediaLocation.extractSiteKey(): String {
+    if(url.contains("pornhub"))
+        return "pornhub"
+    return "xhamster"
 }

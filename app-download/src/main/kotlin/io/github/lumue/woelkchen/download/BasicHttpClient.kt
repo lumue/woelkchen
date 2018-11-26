@@ -28,7 +28,7 @@ open class BasicHttpClient(val password: String = "",
     val logger = LoggerFactory.getLogger(BasicHttpClient::class.java)!!
 
 
-    val httpClientBuilder: HttpClientBuilder = HttpClientBuilder.create()
+    protected val httpClientBuilder: HttpClientBuilder = HttpClientBuilder.create()
             .setDefaultCookieStore(cookieStore)
 
     val loggedIn: Boolean

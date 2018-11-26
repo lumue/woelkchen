@@ -2,7 +2,7 @@ package io.github.lumue.woelkchen.download
 
 interface ResolveMetadataStep {
 
-      suspend fun resolveMetadata(l: MediaLocation) : LocationMetadata
+      suspend fun retrieveMetadata(l: MediaLocation) : LocationMetadata
 
 }
 
@@ -10,3 +10,4 @@ interface ResolveMetadataStep {
 
 
 
+class ResolveException(s: String,e: Throwable? =null) : Throwable(s,e)

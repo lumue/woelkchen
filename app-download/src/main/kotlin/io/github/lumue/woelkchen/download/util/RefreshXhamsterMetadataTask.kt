@@ -5,8 +5,8 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import io.github.lumue.woelkchen.download.LocationMetadataWriter
 import io.github.lumue.woelkchen.download.MediaLocation
-import io.github.lumue.woelkchen.download.sites.xh.XhHttpClient
-import io.github.lumue.woelkchen.download.sites.xh.XhResolver
+import io.github.lumue.woelkchen.download.sites.ph.PhHttpClient
+import io.github.lumue.woelkchen.download.sites.ph.PhResolver
 import kotlinx.coroutines.newFixedThreadPoolContext
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -17,7 +17,7 @@ import kotlin.coroutines.CoroutineContext
 
 private val objectMapper: ObjectMapper = ObjectMapper().registerModule(JavaTimeModule())
 
-private val xhResolver: XhResolver = XhResolver(XhHttpClient())
+private val xhResolver: PhResolver = PhResolver(PhHttpClient())
 
 private val locationMetadataWriter: LocationMetadataWriter = LocationMetadataWriter(objectMapper)
 
@@ -33,7 +33,7 @@ fun main(args: Array<String>) {
                 handleFile = { refreshXhamsterMetadata(it) }
         )
 
-        processFiles("mnt/media/adult")
+        processFiles("/mnt/nasbox/media/adult")
     }
 
 
@@ -44,7 +44,7 @@ suspend fun refreshXhamsterMetadata(infojsonfile: File) {
         val json = infojsonfile.asJsonNode()
         val filename = infojsonfile.absolutePath.replace(".info.json", ".meta.json")
         if (json.isXhamsterInfoJson() ) {
-            val metadata = xhResolver.resolveMetadata(MediaLocation(json.webpageUrl.textValue()))
+            val metadata = xhResolver.retrieveMetadata(MediaLocation(json.webpageUrl.textValue()))
             logger.debug("writing $metadata to $filename")
             val out = FileOutputStream(filename)
             locationMetadataWriter.write(metadata, out)
@@ -59,7 +59,6 @@ suspend fun refreshXhamsterMetadata(infojsonfile: File) {
                 logger.error(message, e)
         }
     }
-
 }
 
 
@@ -68,7 +67,7 @@ private fun JsonNode.isXhamsterInfoJson(): Boolean {
     if (!node.isTextual)
         return false
 
-    return node.textValue().contains("xhamster.com")
+    return node.textValue().contains("pornhub")
 }
 
 private val JsonNode.webpageUrl: JsonNode

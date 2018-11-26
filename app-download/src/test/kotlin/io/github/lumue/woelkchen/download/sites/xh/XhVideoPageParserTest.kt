@@ -7,7 +7,7 @@ import org.apache.commons.io.FileUtils
 import java.io.File
 
 
-class VideoModelParserTest {
+class XhVideoPageParserTest {
 
     val htmlString = FileUtils.readFileToString(
                 File(javaClass.classLoader.getResource("io/github/lumue/woelkchen/download/sites/xh/xhpage.html").toURI()
@@ -18,7 +18,7 @@ class VideoModelParserTest {
 
     @Test
     fun testParsePage() {
-        val videoModel = VideoModelParser().fromHtml(htmlString)
+        val videoModel = XhVideoPageParser().fromHtml(htmlString)
         Assert.assertNotNull(videoModel)
     }
 

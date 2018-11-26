@@ -14,7 +14,7 @@ class YdlResolver : ResolveMetadataStep {
     private val logger = LoggerFactory.getLogger(this.javaClass.name)
 
 
-    override suspend fun resolveMetadata(l: MediaLocation): LocationMetadata {
+    override suspend fun retrieveMetadata(l: MediaLocation): LocationMetadata {
 
 
         logger.debug("resolving metadata for location " + l)

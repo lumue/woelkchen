@@ -40,10 +40,10 @@ data class LocationMetadata(@JsonProperty("url") val url: String,
                                @JsonProperty("actors") val actors: Set<Actor> = setOf(),
                                @JsonProperty("duration") val duration: Duration = Duration.ZERO,
                                @JsonProperty("views") val views: Int = 0,
-                               @JsonProperty("downloaded") val downloaded: LocalDateTime?,
-                               @JsonProperty("uploaded") val uploaded: LocalDateTime?,
-                               @JsonProperty("hoster") val hoster: String?,
-                               @JsonProperty("votes") val votes: Int?
+                               @JsonProperty("downloaded") val downloaded: LocalDateTime? = LocalDateTime.now(),
+                               @JsonProperty("uploaded") val uploaded: LocalDateTime? = LocalDateTime.MIN,
+                               @JsonProperty("hoster") val hoster: String?="unkonown",
+                               @JsonProperty("votes") val votes: Int?=0
 
     ){
 

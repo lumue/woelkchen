@@ -41,7 +41,7 @@ abstract class AbstractDownloadTest {
                 launch {
                     val l = MediaLocation(urlList[it], LocalDateTime.now())
                     val metadata = resolver
-                            .resolveMetadata(l)
+                            .retrieveMetadata(l)
                     logger.info(metadata.jsonString())
                 }
             }
@@ -62,8 +62,8 @@ abstract class AbstractDownloadTest {
             urlList
                     .forEach {
                         val l = MediaLocation(it, LocalDateTime.now())
-                        val metadata = resolver.resolveMetadata(l)
-                        val downloadResult = downloader(metadata,
+                        val metadata = resolver.retrieveMetadata(l)
+                        val downloadResult = downloader.downloadContent(metadata,
                                 downloadPath,
                                 progressHandler(metadata.contentMetadata.title)
                         )

@@ -7,7 +7,7 @@ import com.fasterxml.jackson.databind.JsonNode
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class PageInitials(
         @JsonProperty("visitFavorite") val visitFavorite: Boolean = false,
-        @JsonProperty("videoModel") val videoModel: VideoModel=VideoModel(),
+        @JsonProperty("videoModel") val videoModel: XhVideoPageModel=XhVideoPageModel(),
         @JsonProperty("relatedVideosPagination") val relatedVideosPagination: RelatedVideosPagination = RelatedVideosPagination(),
         @JsonProperty("commentsCollection") val commentsCollection: List<CommentsCollection> = listOf(),
         @JsonProperty("xplayerSettings") val xplayerSettings: JsonNode? = null,

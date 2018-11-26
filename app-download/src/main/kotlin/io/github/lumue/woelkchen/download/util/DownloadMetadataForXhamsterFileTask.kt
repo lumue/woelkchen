@@ -44,7 +44,7 @@ suspend fun handleFile(videofile: File) {
         logger.debug("processing $videofile")
         val videoURL = "https://xhamster.com/videos/${videofile.videoId}"
         logger.debug("video url for $videofile is $videoURL")
-        val metadata = xhResolver.resolveMetadata(MediaLocation(videoURL))
+        val metadata = xhResolver.retrieveMetadata(MediaLocation(videoURL))
         val metadataFilename = dirName + File.separator + metadata.contentMetadata.title + locationMetadataFileSuffix
         logger.debug("writing $metadata to $metadataFilename")
         val out = FileOutputStream(metadataFilename)
