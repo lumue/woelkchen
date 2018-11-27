@@ -40,12 +40,13 @@ fun URL.getContentLength(): Long {
 }
 
 
-suspend fun CloseableHttpClient.getContentAsString(url: String): String {
+suspend fun CloseableHttpClient.getContentAsString(url: String, additionalHeaders: Map<String, String> = mapOf()): String {
     return suspendCancellableCoroutine {
         try {
             val result=
             this.use { httpClient ->
                 val get = HttpGet(url)
+                get.addHeaders(additionalHeaders)
                 httpClient.execute(get).use{ response ->
                     if (response.statusLine.statusCode != 200)
                         throw RuntimeException("http error : ${response.statusLine}")

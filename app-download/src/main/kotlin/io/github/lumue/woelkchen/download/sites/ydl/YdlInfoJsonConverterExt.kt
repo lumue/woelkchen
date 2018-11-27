@@ -1,5 +1,6 @@
 package io.github.lumue.woelkchen.download.sites.ydl
 
+import com.fasterxml.jackson.databind.JsonNode
 import io.github.lumue.woelkchen.download.LocationMetadata
 import io.github.lumue.ydlwrapper.metadata.single_info_json.Format
 import io.github.lumue.ydlwrapper.metadata.single_info_json.HttpHeaders
@@ -149,4 +150,27 @@ val File.isInfoJson: Boolean
         return this.exists()
                 && !this.isDirectory
                 && this.name.endsWith(infoJsonFileSuffix)
+    }
+
+
+fun JsonNode.isXhamsterInfoJson(): Boolean {
+    val node = webpageUrl
+    if (!node.isTextual)
+        return false
+
+    return node.textValue().contains("pornhub")
+}
+
+
+fun JsonNode.isPornhubInfoJson(): Boolean {
+    val node = webpageUrl
+    if (!node.isTextual)
+        return false
+
+    return node.textValue().contains("pornhub")
+}
+
+ val JsonNode.webpageUrl: JsonNode
+    get() {
+        return get("webpage_url")
     }

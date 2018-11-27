@@ -7,10 +7,15 @@ import org.slf4j.LoggerFactory
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.github.lumue.woelkchen.download.*
-import org.jsoup.nodes.Element
 import java.io.FileOutputStream
+import javax.script.Invocable
+import javax.script.ScriptEngineManager
+
 
 class PhSite : SiteClient{
+
+    private val logger = LoggerFactory.getLogger(this.javaClass.name)
+
     val httpClient: PhHttpClient = PhHttpClient()
 
     val downloader: io.github.lumue.woelkchen.download.DownloadFileStep = BasicHttpDownload(httpClient)
@@ -53,8 +58,8 @@ class PhResolver(val httpClient: PhHttpClient) : ResolveMetadataStep {
 
     override suspend fun retrieveMetadata(l: MediaLocation): LocationMetadata {
         logger.debug("resolving metadata for location " + l)
-        val page = PhVideoPage(loadVideoPageDocument(l))
-
+        val pageDocument = loadVideoPageDocument(l)
+        val page=PhVideoPage(pageDocument)
 
         val contentMetadata = page.contentMetadata
             val downloadMetadata = page.downloadMetadata
@@ -65,14 +70,82 @@ class PhResolver(val httpClient: PhHttpClient) : ResolveMetadataStep {
             )
         }
 
-    private suspend fun loadVideoPageDocument(l: MediaLocation): Document {
-        val contentAsString = l.contentAsString()
-        return Jsoup.parse(contentAsString)
+    private suspend fun loadVideoPageDocument(l: MediaLocation, headers: Map<String,String> = mapOf()): Document {
+        val contentAsString = l.contentAsString(headers)
+        val document = Jsoup.parse(contentAsString)
+        if(document.isPhVideoPage())
+            return document
+        else if (document.isRnCookiePage())
+        {
+            logger.warn("need rncookie. trying to calculate one from returned page.")
+            val page=RnCookiePage(document)
+            val calculatedKey = page.rnKeyScript.calculatedKey
+            httpClient.addCookie("RNKEY", calculatedKey,"*.pornhub.com")
+            logger.warn("rncookie evaluated to $calculatedKey. setting as RNKEY cookie")
+            return loadVideoPageDocument(l, mapOf("Cookie" to "RNKEY=$calculatedKey"))
+        }
+
+        throw ResolveException("Document ${document.pretty} does not seem to be a pornhub page")
+
+        return document
     }
 
-    private suspend fun MediaLocation.contentAsString(): String? {
-        return this@PhResolver.httpClient.getContentAsString(url)
+    private suspend fun MediaLocation.contentAsString(additionalHeaders: Map<String, String> = mapOf<String,String>()): String? {
+        return this@PhResolver.httpClient.getContentAsString(url,additionalHeaders )
     }
+}
+
+class RnCookiePage(document: Document) {
+
+    val rnKeyScript by lazy { document.extractRnKeyJavascript() }
+    
+    init {
+        if(!document.isRnCookiePage())
+            throw ResolveException("Document ${document.pretty} does not seem to be a pornhub rncookie page")
+    }
+
+    
+}
+
+private fun Document.extractRnKeyJavascript(): RnKeyJavascript {
+    return RnKeyJavascript(
+            select("head")
+            .select("script").first().dataNodes().first().wholeData
+                    .replace("<!--","")
+                    .replace("-->","")
+    )
+}
+
+class RnKeyJavascript(val source :String) {
+
+    val calculatedKey by lazy { calculateKey() }
+
+    val generatedSource by lazy { generateSource() }
+
+    val invocableJavaScript by lazy { evaluateGeneratedSource() }
+
+    private fun evaluateGeneratedSource(): Invocable {
+        val scriptEngine = ScriptEngineManager().getEngineByName("nashorn")
+        scriptEngine.eval(generatedSource)
+        return scriptEngine as Invocable
+    }
+
+    private fun generateSource(): String {
+        return source
+                .replace("document.location.reload(true);","")
+                .replace("document.cookie = \"RNKEY=","return \"")
+                .replace("document.cookie=\"RNKEY=","return \"")
+    }
+
+    private fun calculateKey(): String {
+        return invocableJavaScript.invokeFunction("go") as String
+    }
+
+}
+
+private fun Document.isRnCookiePage(): Boolean {
+    val attr = select("body").attr("onload")
+    return attr!=null&&attr==("go()")
 }
 
 private fun Document.isPhVideoPage() = select("#player").isNotEmpty()

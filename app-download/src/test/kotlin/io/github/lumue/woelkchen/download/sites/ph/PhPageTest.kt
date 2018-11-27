@@ -12,7 +12,7 @@ class PhPageTest {
 
 
     val htmlString = FileUtils.readFileToString(
-            File(javaClass.classLoader.getResource("io/github/lumue/woelkchen/download/sites/ph/phpage.html").toURI()
+            File(javaClass.classLoader.getResource("io/github/lumue/woelkchen/download/sites/ph/video-page.html").toURI()
             ),
             "UTF-8"
     )

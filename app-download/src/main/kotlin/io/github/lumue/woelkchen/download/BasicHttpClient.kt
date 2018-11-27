@@ -9,6 +9,7 @@ import org.apache.http.client.CookieStore
 import org.apache.http.impl.client.BasicCookieStore
 import org.apache.http.impl.client.CloseableHttpClient
 import org.apache.http.impl.client.HttpClientBuilder
+import org.apache.http.impl.cookie.BasicClientCookie
 import org.slf4j.LoggerFactory
 import java.io.File
 import java.util.concurrent.TimeUnit
@@ -39,7 +40,7 @@ open class BasicHttpClient(val password: String = "",
 
 
     val loggingIn: AtomicBoolean = AtomicBoolean(false)
-    suspend fun getContentAsString(url: String): String {
+    suspend fun getContentAsString(url: String,additionalHeaders: Map<String,String> = mapOf()): String {
 
         if (!username.isEmpty() && !loggedIn)
             login()
@@ -47,7 +48,7 @@ open class BasicHttpClient(val password: String = "",
 
         val httpClient = httpClientBuilder.build()
 
-        return httpClient.getContentAsString(url)
+        return httpClient.getContentAsString(url,additionalHeaders )
 
     }
 
@@ -92,6 +93,12 @@ open class BasicHttpClient(val password: String = "",
 
 
         return httpClientBuilder.build().download(m.downloadMetadata.selectedStreams[0].url, m.downloadMetadata.selectedStreams[0].headers, targetfile, progressHandler)
+    }
+
+    fun addCookie( name: String, value: String, domain: String) {
+        val basicClientCookie = BasicClientCookie(name, value)
+        basicClientCookie.domain=domain
+        cookieStore.addCookie(basicClientCookie)
     }
 
 }

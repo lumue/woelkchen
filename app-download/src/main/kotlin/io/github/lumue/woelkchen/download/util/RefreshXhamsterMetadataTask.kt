@@ -7,6 +7,8 @@ import io.github.lumue.woelkchen.download.LocationMetadataWriter
 import io.github.lumue.woelkchen.download.MediaLocation
 import io.github.lumue.woelkchen.download.sites.ph.PhHttpClient
 import io.github.lumue.woelkchen.download.sites.ph.PhResolver
+import io.github.lumue.woelkchen.download.sites.ydl.isPornhubInfoJson
+import io.github.lumue.woelkchen.download.sites.ydl.webpageUrl
 import kotlinx.coroutines.newFixedThreadPoolContext
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -17,7 +19,7 @@ import kotlin.coroutines.CoroutineContext
 
 private val objectMapper: ObjectMapper = ObjectMapper().registerModule(JavaTimeModule())
 
-private val xhResolver: PhResolver = PhResolver(PhHttpClient())
+private val resolver: PhResolver = PhResolver(PhHttpClient())
 
 private val locationMetadataWriter: LocationMetadataWriter = LocationMetadataWriter(objectMapper)
 
@@ -27,53 +29,36 @@ private val threadpoolContext: CoroutineContext = newFixedThreadPoolContext(30, 
 
 fun main(args: Array<String>) {
 
-        val processFiles = ProcessFiles(
-                context = threadpoolContext,
-                fileFilter = { it.isInfoJsonFile },
-                handleFile = { refreshXhamsterMetadata(it) }
-        )
+    val processFiles = ProcessFiles(
+            context = threadpoolContext,
+            fileFilter = { it.isInfoJsonFile },
+            handleFile = { refreshMetadata(it) }
+    )
 
-        processFiles("/mnt/nasbox/media/adult")
-    }
+    processFiles("/mnt/nasbox/media/adult")
+}
 
 
-
-suspend fun refreshXhamsterMetadata(infojsonfile: File) {
+suspend fun refreshMetadata(infojsonfile: File) {
     try {
         logger.debug("processing $infojsonfile")
         val json = infojsonfile.asJsonNode()
         val filename = infojsonfile.absolutePath.replace(".info.json", ".meta.json")
-        if (json.isXhamsterInfoJson() ) {
-            val metadata = xhResolver.retrieveMetadata(MediaLocation(json.webpageUrl.textValue()))
-            logger.debug("writing $metadata to $filename")
-            val out = FileOutputStream(filename)
-            locationMetadataWriter.write(metadata, out)
-            out.close()
-        }
+        val metadata = resolver.retrieveMetadata(MediaLocation(json.webpageUrl.textValue()))
+        logger.debug("writing $metadata to $filename")
+        val out = FileOutputStream(filename)
+        locationMetadataWriter.write(metadata, out)
+        out.close()
     } catch (e: Throwable) {
         val message = e.message
-        if (message != null) {
-            if (message.endsWith("410 Gone")) {
+        if (message != null && message.endsWith("410 Gone")) {
                 logger.warn("video zu ${infojsonfile.absolutePath} nicht mehr online verfügbar ")
-            } else
-                logger.error(message, e)
         }
+        else
+            logger.error("error processing ${infojsonfile.name}", e)
     }
 }
 
-
-private fun JsonNode.isXhamsterInfoJson(): Boolean {
-    val node = webpageUrl
-    if (!node.isTextual)
-        return false
-
-    return node.textValue().contains("pornhub")
-}
-
-private val JsonNode.webpageUrl: JsonNode
-    get() {
-        return get("webpage_url")
-    }
 
 private fun File.asJsonNode(): JsonNode {
     val jsonNode = objectMapper.readTree(this)
@@ -83,5 +68,8 @@ private fun File.asJsonNode(): JsonNode {
 
 private val File.isInfoJsonFile: Boolean
     get() {
-        return this.exists() && !this.isDirectory && this.name.endsWith("info.json")
+        return this.exists()
+                && !this.isDirectory
+                && this.name.endsWith("info.json")
+                && asJsonNode().isPornhubInfoJson()
     }
