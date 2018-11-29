@@ -34,7 +34,7 @@ fun main(args: Array<String>) {
             handleFile = { handleFile(it)}
     )
 
-    processFiles("/mnt/nasbox/media/adult/incoming")
+    processFiles("/mnt/nasbox/media/adult/")
 }
 
 suspend fun handleFile(videofile: File) {
@@ -70,13 +70,20 @@ suspend fun handleFile(videofile: File) {
 
 private val File.videoId: String
     get() {
-        return this.name.split("_")[1]
+        val parts = this.name.split("_")
+        if(parts[0]=="xhamster.com")
+            return parts[1]
+        return parts[0]
     }
 
 private val File.isXhamsterVideo: Boolean
     get() {
         return this.exists()
                 && !this.isDirectory
-                && this.name.startsWith("xhamster.com")
                 && this.name.endsWith("mp4")
+                && this.name.contains("_")
+                && this.videoId.isNumeric
+
     }
+private val String.isNumeric: Boolean
+    get() {return this.firstOrNull { c->!c.isDigit() }==null}

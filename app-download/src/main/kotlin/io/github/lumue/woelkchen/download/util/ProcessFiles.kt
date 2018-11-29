@@ -12,8 +12,8 @@ import kotlin.coroutines.CoroutineContext
 
 class ProcessFiles(
         val fileFilter: (file: File) -> Boolean = { true },
-        val handleFile: suspend (file: File) -> Any = {},
-        val context: CoroutineContext = newFixedThreadPoolContext(30, "process-file-worker")) {
+        val context: CoroutineContext = newFixedThreadPoolContext(30, "process-file-worker"),
+    val handleFile: suspend (file: File) -> Any = {}){
 
     private val logger: Logger = LoggerFactory.getLogger(ProcessFiles::class.java)
 

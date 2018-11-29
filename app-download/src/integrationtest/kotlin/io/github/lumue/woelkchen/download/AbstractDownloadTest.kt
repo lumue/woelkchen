@@ -75,7 +75,7 @@ abstract class AbstractDownloadTest {
         }
     }
 
-    protected abstract val downloader: io.github.lumue.woelkchen.download.DownloadFileStep
+    protected abstract val downloader: DownloadFileStep
 
     protected abstract val resolver: ResolveMetadataStep
 }

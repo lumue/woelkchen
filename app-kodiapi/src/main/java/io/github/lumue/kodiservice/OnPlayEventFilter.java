@@ -1,6 +1,5 @@
 package io.github.lumue.kodiservice;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import io.github.lumue.kodiservice.jsonrpc.KodiApiEvent;
 import org.springframework.integration.core.MessageSelector;
 import org.springframework.messaging.Message;

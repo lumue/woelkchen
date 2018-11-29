@@ -85,7 +85,7 @@ class PhResolver(val httpClient: PhHttpClient) : ResolveMetadataStep {
             return loadVideoPageDocument(l, mapOf("Cookie" to "RNKEY=$calculatedKey"))
         }
 
-        throw ResolveException("Document ${document.pretty} does not seem to be a pornhub page")
+        throw ResolveException("Document ${l.url} does not seem to be a pornhub page")
 
         return document
     }
@@ -258,7 +258,7 @@ private data class PlayerJson(
         @JsonProperty("hidePostPauseRoll")
         val hidePostPauseRoll: String = "",
         @JsonProperty("hotspots")
-        val hotspots: List<String> = listOf(),
+        val hotspots: List<String>? = listOf(),
         @JsonProperty("htmlPauseRoll")
         val htmlPauseRoll: String = "",
         @JsonProperty("htmlPostRoll")

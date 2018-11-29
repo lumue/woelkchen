@@ -1,13 +1,14 @@
 package io.github.lumue.woelkchen.media.import
 
-import kotlinx.coroutines.experimental.async
-import kotlinx.coroutines.experimental.channels.produce
-import kotlinx.coroutines.experimental.newFixedThreadPoolContext
-import kotlinx.coroutines.experimental.runBlocking
+
+import kotlinx.coroutines.async
+import kotlinx.coroutines.channels.produce
+import kotlinx.coroutines.newFixedThreadPoolContext
+import kotlinx.coroutines.runBlocking
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.io.File
-import kotlin.coroutines.experimental.CoroutineContext
+import kotlin.coroutines.CoroutineContext
 
 class ProcessFiles(
         val fileFilter: (file: File) -> Boolean = { true },

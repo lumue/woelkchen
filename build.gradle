@@ -20,12 +20,13 @@ allprojects {
 			springBootVersion = '2.1.0.RELEASE'
 		}
 
+
 	}
+
 	repositories {
 		mavenCentral()
 		maven { url "https://jitpack.io" }
 	}
-
 
 
 

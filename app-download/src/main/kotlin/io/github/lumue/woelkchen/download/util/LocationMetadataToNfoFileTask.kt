@@ -23,33 +23,42 @@ private val locationMetadataReader: LocationMetadataReader = LocationMetadataRea
 private val threadpoolContext: CoroutineContext = newFixedThreadPoolContext(30, "load-meta-json-worker")
 
 
-private val nfoSerializer=io.github.lumue.nfotools.NfoMovieSerializer(
+private val nfoSerializer = io.github.lumue.nfotools.NfoMovieSerializer(
         JAXBContext.newInstance(Movie::class.java, Movie.Actor::class.java)
 )
 
 fun main(args: Array<String>) {
 
 
-    val fileProcessor = ProcessFiles(
-            context = threadpoolContext,
-            fileFilter = { it.isMetadataJson },
-            handleFile = { convertLocationMetadataFileToNfoFile(it) }
-    )
+    val fileProcessor =
+            newFileProcessor(filter = { it.isMetadataJson })
+            {
+                val instream = FileInputStream(it)
+                val locationMetadata = locationMetadataReader.read(instream)
+                instream.close()
+                val movieBuilder = Movie.MovieBuilder()
+                locationMetadata.configureMovieBuilderWithLocationMetadata(movieBuilder)
+                val out = FileOutputStream(it.absolutePath.replace(locationMetadataFileSuffix, ".nfo"))
+                nfoSerializer.serialize(movieBuilder.build(), out)
+                out.close()
+            }
 
-    fileProcessor(path = "/mnt/nasbox/media/adult/incoming")
+
+    fileProcessor(path = "/mnt/nasbox/media/adult")
 
 
 }
 
-fun convertLocationMetadataFileToNfoFile(metadatafile: File) {
-    val instream = FileInputStream(metadatafile)
-    val locationMetadata = locationMetadataReader.read(instream)
-    instream.close()
-    val movieBuilder = Movie.MovieBuilder()
-    locationMetadata.configureMovieBuilderWithLocationMetadata(movieBuilder)
-    val out=FileOutputStream(metadatafile.absolutePath.replace(locationMetadataFileSuffix,".nfo"))
-    nfoSerializer.serialize(movieBuilder.build(),out)
-    out.close()
+private fun newFileProcessor(
+        context: CoroutineContext = threadpoolContext,
+        filter: (file: File) -> Boolean,
+        block: suspend (file: File) -> Any)
+        : ProcessFiles {
+    return ProcessFiles(
+            context = context,
+            fileFilter = filter,
+            handleFile = block
+    )
 }
 
 

@@ -3,12 +3,11 @@ package io.github.lumue.woelkchen.download
 import io.github.lumue.woelkchen.download.sites.ph.PhSite
 import io.github.lumue.woelkchen.download.sites.xh.XhSite
 import org.slf4j.LoggerFactory
-import org.springframework.kotlin.experimental.coroutine.annotation.Coroutine
 import org.springframework.stereotype.Service
 import java.util.concurrent.TimeUnit
 
 @Service
-open class DownloadService {
+class DownloadService {
 
 
     private val logger = LoggerFactory.getLogger(DownloadService::class.java)
@@ -22,8 +21,7 @@ open class DownloadService {
         logger.debug(" $p of $t in ${seconds}s. ${p / seconds} b/s of $name downloaded")
     }
 
-    @Coroutine("downloadDispatcher")
-    open suspend fun download(url: MediaLocation) {
+    suspend fun download(url: MediaLocation) {
         val client=clients[url.extractSiteKey()]!!
         val metadata= client.retrieveMetadata(url)
         client.downloadContent(metadata,"/mnt/nasbox/media/adult/incoming",progressHandler(metadata.contentMetadata.title))
