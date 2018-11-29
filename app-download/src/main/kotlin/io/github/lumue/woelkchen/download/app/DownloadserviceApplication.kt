@@ -1,5 +1,5 @@
 
-package io.github.lumue.woelkchen.download
+package io.github.lumue.woelkchen.download.app
 
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
@@ -9,7 +9,7 @@ import org.springframework.boot.runApplication
 open class DownloadserviceApplication
 
     fun main(args: Array<String>) {
-        runApplication<io.github.lumue.woelkchen.download.DownloadserviceApplication>(*args)
+        runApplication<DownloadserviceApplication>(*args)
     }
 
 

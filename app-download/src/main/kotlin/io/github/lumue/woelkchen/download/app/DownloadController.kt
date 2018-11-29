@@ -1,5 +1,7 @@
-package io.github.lumue.woelkchen.download
+package io.github.lumue.woelkchen.download.app
 
+import io.github.lumue.woelkchen.download.DownloadService
+import io.github.lumue.woelkchen.download.MediaLocation
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody

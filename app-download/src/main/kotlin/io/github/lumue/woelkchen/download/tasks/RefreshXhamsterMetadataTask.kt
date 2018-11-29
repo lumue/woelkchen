@@ -1,4 +1,4 @@
-package io.github.lumue.woelkchen.download.util
+package io.github.lumue.woelkchen.download.tasks
 
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper

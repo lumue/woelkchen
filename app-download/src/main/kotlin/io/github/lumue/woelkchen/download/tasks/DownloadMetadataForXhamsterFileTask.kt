@@ -1,4 +1,4 @@
-package io.github.lumue.woelkchen.download.util
+package io.github.lumue.woelkchen.download.tasks
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
@@ -31,7 +31,7 @@ fun main(args: Array<String>) {
     val processFiles = ProcessFiles(
             context = threadpoolContext,
             fileFilter = { it.isXhamsterVideo },
-            handleFile = { handleFile(it)}
+            handleFile = { handleFile(it) }
     )
 
     processFiles("/mnt/nasbox/media/adult/")

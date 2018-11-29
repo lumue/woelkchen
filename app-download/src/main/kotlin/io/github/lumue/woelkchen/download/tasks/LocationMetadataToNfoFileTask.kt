@@ -1,4 +1,4 @@
-package io.github.lumue.woelkchen.download.util
+package io.github.lumue.woelkchen.download.tasks
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
@@ -6,6 +6,7 @@ import io.github.lumue.nfotools.Movie
 import io.github.lumue.woelkchen.download.LocationMetadataReader
 import io.github.lumue.woelkchen.download.isMetadataJson
 import io.github.lumue.woelkchen.download.locationMetadataFileSuffix
+import io.github.lumue.woelkchen.download.util.configureMovieBuilderWithLocationMetadata
 import kotlinx.coroutines.newFixedThreadPoolContext
 import java.io.File
 import java.io.FileInputStream
