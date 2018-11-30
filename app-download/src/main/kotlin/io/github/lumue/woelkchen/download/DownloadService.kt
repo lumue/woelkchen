@@ -21,7 +21,7 @@ class DownloadService {
 
     val results: MutableMap<MediaLocation, FileDownloadResult> = mutableMapOf()
 
-    @Value("woelkchen.download.path.download")
+    @Value("\${woelkchen.download.path.download}")
     val downloadPath: String = "/mnt/nasbox/media/adult/incoming"
 
 
