@@ -5,6 +5,7 @@ import io.github.lumue.woelkchen.download.sites.xh.XhSite
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
 import org.slf4j.LoggerFactory
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 import java.util.concurrent.TimeUnit
 
@@ -20,6 +21,9 @@ class DownloadService {
 
     val results: MutableMap<MediaLocation, FileDownloadResult> = mutableMapOf()
 
+    @Value("woelkchen.download.path.download")
+    val downloadPath: String = "/mnt/nasbox/media/adult/incoming"
+
 
     fun progressHandler(execution: DownloadExecution) = fun(p: Long, time: Long, t: Long) {
         var seconds = TimeUnit.MILLISECONDS.toSeconds(time)
@@ -34,6 +38,8 @@ class DownloadService {
         return scheduleDownload(url, client)
     }
 
+
+
     private fun scheduleDownload(url: MediaLocation, client: SiteClient): DownloadExecution {
 
         val downloadExecution = DownloadExecution(url)
@@ -45,7 +51,7 @@ class DownloadService {
                 val fileDownloadResult = this.async {
                     client.downloadContent(
                             metadata.await(),
-                            "/mnt/nasbox/media/adult/incoming",
+                            downloadPath,
                             progressHandler(downloadExecution)
                     )
                 }
