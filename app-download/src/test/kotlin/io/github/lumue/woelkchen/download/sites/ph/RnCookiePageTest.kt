@@ -17,16 +17,12 @@ class RnCookiePageTest {
     )
 
     val rnlKeyScriptFromPage = FileUtils.readFileToString(
-            File(javaClass.classLoader.getResource("io/github/lumue/woelkchen/download/sites/ph/rnlscript.js").toURI()
+            File(javaClass.classLoader.getResource("io/github/lumue/woelkchen/download/sites/ph/rnlscript.js.sample").toURI()
             ),
             "UTF-8"
     )
 
-    val generatedKeyScript = FileUtils.readFileToString(
-            File(javaClass.classLoader.getResource("io/github/lumue/woelkchen/download/sites/ph/modified-rnlscript.js").toURI()
-            ),
-            "UTF-8"
-    )
+
 
     @Test
     fun `should extract expected rnkey script from page`() {
@@ -38,7 +34,7 @@ class RnCookiePageTest {
     @Test
     fun `should generate source of expected rnkey script`() {
         val page = RnCookiePage(Jsoup.parse(htmlString))
-        assertThat(page.rnKeyScript.generatedSource).isEqualTo(generatedKeyScript)
+        assertThat(page.rnKeyScript.generatedSource).doesNotContain("document.")
     }
 
 

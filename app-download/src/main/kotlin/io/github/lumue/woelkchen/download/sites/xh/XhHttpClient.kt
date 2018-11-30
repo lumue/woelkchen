@@ -1,7 +1,7 @@
 package io.github.lumue.woelkchen.download.sites.xh
 
-import addHeaders
 import io.github.lumue.woelkchen.download.BasicHttpClient
+import io.github.lumue.woelkchen.download.addHeaders
 import io.github.lumue.woelkchen.download.names
 import org.apache.http.client.CookieStore
 import org.apache.http.client.methods.HttpGet

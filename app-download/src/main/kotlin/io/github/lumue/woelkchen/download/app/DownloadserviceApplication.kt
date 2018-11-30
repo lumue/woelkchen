@@ -5,7 +5,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
 
 @Suppress("RedundantModalityModifier")
-@SpringBootApplication
+@SpringBootApplication(scanBasePackages = ["io.github.lumue.woelkchen.download"])
 open class DownloadserviceApplication
 
     fun main(args: Array<String>) {

@@ -1,4 +1,4 @@
-package io.github.lumue.woelkchen.download
+package io.github.lumue.woelkchen.download.app
 
 import org.junit.Test
 import org.junit.runner.RunWith
