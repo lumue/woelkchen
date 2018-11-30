@@ -19,11 +19,11 @@ cache:
 
 
 before_script:
-  - sudo apt-get install ffmpeg
+  - sudo apt-get install libav-tools
   - sudo apt-get install youtube-dl
   - sudo ln -s `which youtube-dl` /usr/local/bin/youtube-dl
-  - sudo ln -s `which ffmpeg` /usr/local/bin/ffmpeg
-  - sudo ln -s `which ffprobe` /usr/local/bin/ffprobe
+  - sudo ln -s `which avconv` /usr/local/bin/ffmpeg
+  - sudo ln -s `which avprobe` /usr/local/bin/ffprobe
   - ./gradlew npmInstall
 
 script:
