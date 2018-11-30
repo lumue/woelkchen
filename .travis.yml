@@ -19,11 +19,11 @@ cache:
 
 
 before_script:
-  - apt-get install ffmpeg
-  - apt-get install youtube-dl
-  - ln -s `which youtube-dl` /usr/local/bin/youtube-dl
-  - ln -s `which ffmpeg` /usr/local/bin/ffmpeg
-  - ln -s `which ffprobe` /usr/local/bin/ffprobe
+  - sudo apt-get install ffmpeg
+  - sudo apt-get install youtube-dl
+  - sudo ln -s `which youtube-dl` /usr/local/bin/youtube-dl
+  - sudo ln -s `which ffmpeg` /usr/local/bin/ffmpeg
+  - sudo ln -s `which ffprobe` /usr/local/bin/ffprobe
   - ./gradlew npmInstall
 
 script:
