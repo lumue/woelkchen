@@ -1,22 +1,23 @@
 package io.github.lumue.woelkchen.media.import
 
 
-import kotlinx.coroutines.async
+import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.produce
-import kotlinx.coroutines.newFixedThreadPoolContext
-import kotlinx.coroutines.runBlocking
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.io.File
+import java.util.concurrent.Executors
 import kotlin.coroutines.CoroutineContext
 
 class ProcessFiles(
-        val fileFilter: (file: File) -> Boolean = { true },
-        val handleFile: suspend (file: File) -> Any = {},
-        val context: CoroutineContext = newFixedThreadPoolContext(30, "process-file-worker")) {
+        private val fileFilter: (file: File) -> Boolean = { true },
+        private val handleFile: suspend (file: File) -> Any = {},
+        private val context: CoroutineContext = Executors.newFixedThreadPool(10).asCoroutineDispatcher()
+) {
 
     private val logger: Logger = LoggerFactory.getLogger(ProcessFiles::class.java)
 
+    @ExperimentalCoroutinesApi
     operator fun invoke(path: String) {
 
         val rootPath = File(path)
@@ -24,7 +25,7 @@ class ProcessFiles(
             return
 
         runBlocking {
-            val producer = produce {
+            val producer = this.produce(context) {
                 rootPath.walkBottomUp()
                         .filter { fileFilter(it) }
                         .forEach {
@@ -35,7 +36,7 @@ class ProcessFiles(
             }
 
             val consumer = List(20) {
-                async(context) {
+                this.async(context) {
                     for (file in producer) {
                         try {
                             logger.debug("processing $file")
