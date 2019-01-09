@@ -52,7 +52,7 @@ data class PageInitials(
 
 
 
-
+    @JsonIgnoreProperties(ignoreUnknown = true)
     data class NotificationsModel(
             @JsonProperty("gifts") val gifts: Int = 0,
             @JsonProperty("messages") val messages: Int = 0,
@@ -60,7 +60,7 @@ data class PageInitials(
             @JsonProperty("notifications") val notifications: Int = 0
     )
 
-
+    @JsonIgnoreProperties(ignoreUnknown = true)
     data class CommentsCollection(
             @JsonProperty("modelName") val modelName: String = "",
             @JsonProperty("id") val id: Int = 0,
@@ -73,7 +73,7 @@ data class PageInitials(
             @JsonProperty("replyTo") val replyTo:  JsonNode? = null
 
     ) {
-
+        @JsonIgnoreProperties(ignoreUnknown = true)
         data class Author(
                 @JsonProperty("lastActive") val lastActive: Any? = Any(),
                 @JsonProperty("editable") val editable: Boolean = false,
@@ -88,7 +88,7 @@ data class PageInitials(
                 @JsonProperty("verified") val verified: Boolean = false,
                 @JsonProperty("name") val name: String = ""
         ) {
-
+            @JsonIgnoreProperties(ignoreUnknown = true)
             data class PersonalInfo(
                     @JsonProperty("gender") val gender: Gender? = Gender(),
                     @JsonProperty("orientation") val orientation: Any? = Any(),
@@ -111,7 +111,7 @@ data class PageInitials(
         }
     }
 
-
+    @JsonIgnoreProperties(ignoreUnknown = true)
     data class RelatedVideosPagination(
             @JsonProperty("active") val active: Int = 0,
             @JsonProperty("next") val next: Int = 0,
@@ -126,13 +126,13 @@ data class PageInitials(
 
 
 
-
+    @JsonIgnoreProperties(ignoreUnknown = true)
     data class MlVideoRelated(
             @JsonProperty("is_ml_related") val isMlRelated: Boolean = false,
             @JsonProperty("is_sponsor") val isSponsor: Boolean = false,
             @JsonProperty("categories") val categories: List<Category> = listOf()
     ) {
-
+        @JsonIgnoreProperties(ignoreUnknown = true)
         data class Category(
                 @JsonProperty("name") val name: String = "",
                 @JsonProperty("url") val url: String = "",
