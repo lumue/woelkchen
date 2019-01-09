@@ -45,8 +45,7 @@ public class ApplicationConfiguration {
 	public RestTemplate restTemplate(RestTemplateBuilder restTemplateBuilder,
 	                                 @Value("${krp.kodi.username}") String username,
 	                                 @Value("${krp.kodi.password}") String password){
-		return restTemplateBuilder
-				.basicAuthorization(username,password)
+		return restTemplateBuilder.basicAuthentication(username, password)
 				.build();
 	}
 	
