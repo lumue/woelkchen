@@ -35,4 +35,7 @@ after_success:
   - docker tag  lumue/woelkchen_download:master-SNAPSHOT lumue/woelkchen_download:latest
   - docker push lumue/woelkchen_download:master-SNAPSHOT
   - docker push lumue/woelkchen_download:latest
+  - docker tag  lumue/kodi-api-service:master-SNAPSHOT lumue/kodi-api-service:latest
+  - docker push lumue/kodi-api-service:master-SNAPSHOT
+  - docker push lumue/kodi-api-service:latest
 
