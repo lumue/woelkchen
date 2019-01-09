@@ -8,12 +8,14 @@ import io.github.lumue.nfotools.Movie
         .withAired(contentMetadata.uploaded)
         .withDateAdded(contentMetadata.downloaded)
         .withTitle(contentMetadata.title)
+        .withRuntime(contentMetadata.duration.toMinutes().toString())
         .withTag(this.contentMetadata.hoster)
         .withTag(this.contentMetadata.uploaded?.year.toString())
         .withTag(this.contentMetadata.uploaded?.month.toString().toLowerCase())
         .withVotes(this.contentMetadata.votes.toString())
         .withTagline(this.contentMetadata.description)
-    this.contentMetadata.tags
+
+     this.contentMetadata.tags
             .map { tag ->  tag.id}
             .map{tagstring->tagstring.replace("/tags/","") }
             .map { tagstring->tagstring.replace("/categories/","") }
