@@ -1,12 +1,9 @@
-getdown:
-  image: lumue/getdown:master-SNAPSHOT
+woelkchen_download:
+  image: lumue/woelkchen_download:master-SNAPSHOT
   restart: always
-  log_driver: "syslog"
-  log_opt:
-    tag: "getdown_getdown"
-    syslog-address: "udp://192.168.1.105:514"
+
   volumes:
-    - /data/docker-volumes/getdown/getdown:/getdown
+    - /data/docker-volumes/woelkchen_download/woelkchen_download:/woelkchen_download
     - /mnt/nasbox/media:/downloads
   ports:
     - "7001:8001"
