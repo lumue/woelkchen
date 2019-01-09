@@ -47,7 +47,7 @@ class DownloadService {
 
         GlobalScope.async {
             try {
-                val metadata = this.async { client.retrieveMetadata(url) }
+                val metadata = this.async { client.downloadMetadata(url) }
                 val fileDownloadResult = this.async {
                     client.downloadContent(
                             metadata.await(),

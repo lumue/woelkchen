@@ -21,7 +21,7 @@ class PhSite : SiteClient{
     val downloader: io.github.lumue.woelkchen.download.DownloadFileStep = BasicHttpDownload(httpClient)
     val resolver: ResolveMetadataStep = PhResolver(httpClient)
 
-    override suspend fun retrieveMetadata(l: MediaLocation): LocationMetadata {
+    override suspend fun downloadMetadata(l: MediaLocation): LocationMetadata {
         return resolver.retrieveMetadata(l)
     }
 
