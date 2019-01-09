@@ -8,7 +8,7 @@ import io.github.lumue.woelkchen.download.ResolveMetadataStep
 
 class PhDownloadTest : AbstractDownloadTest() {
 
-    val httpClient : PhHttpClient = PhHttpClient()
+    private val httpClient : PhHttpClient = PhHttpClient()
 
     override val downloader: DownloadFileStep = BasicHttpDownload(httpClient)
     override val resolver: ResolveMetadataStep = PhResolver(httpClient)
