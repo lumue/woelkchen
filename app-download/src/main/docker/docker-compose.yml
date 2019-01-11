@@ -3,8 +3,8 @@ woelkchen_download:
   restart: always
 
   volumes:
-    - /data/docker-volumes/woelkchen_download/woelkchen_download:/woelkchen_download
-    - /mnt/nasbox/media:/downloads
+    - /data/docker-volumes/woelkchen_download/woelkchen_download:/woelkchen/download
+    - /mnt/nasbox/media/adult/incoming:/downloads
   ports:
-    - "7001:8001"
+    - "8001:8001"
 

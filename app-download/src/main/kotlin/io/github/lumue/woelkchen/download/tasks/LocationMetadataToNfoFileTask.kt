@@ -34,18 +34,19 @@ fun main(args: Array<String>) {
     val fileProcessor =
             newFileProcessor(filter = { it.isMetadataJson })
             {
+                val basename=it.absolutePath.replace(locationMetadataFileSuffix,"").replace(".mp4","")
                 val instream = FileInputStream(it)
                 val locationMetadata = locationMetadataReader.read(instream)
                 instream.close()
                 val movieBuilder = Movie.MovieBuilder()
                 locationMetadata.configureMovieBuilderWithLocationMetadata(movieBuilder)
-                val out = FileOutputStream(it.absolutePath.replace(locationMetadataFileSuffix, ".nfo"))
+                val out = FileOutputStream("${basename}.nfo")
                 nfoSerializer.serialize(movieBuilder.build(), out)
                 out.close()
             }
 
 
-    fileProcessor(path = "/mnt/nasbox/media/adult")
+    fileProcessor(path = "/mnt/nasbox/media/adult/2018")
 
 
 }

@@ -4,7 +4,7 @@ import io.github.lumue.woelkchen.download.*
 
 class YdlDownloadTest : AbstractDownloadTest() {
 
-    val httpClient : BasicHttpClient=YdlHttpClient()
+    private val httpClient : BasicHttpClient=YdlHttpClient()
 
     override val downloader: io.github.lumue.woelkchen.download.DownloadFileStep
         get() = BasicHttpDownload(httpClient)
@@ -12,7 +12,7 @@ class YdlDownloadTest : AbstractDownloadTest() {
         get() = YdlResolver()
 
     override val urlList: List<String>
-        get() = listOf()
+        get() = listOf(GETDOWN_TESTVIDEO_URL)
 
 
 
