@@ -41,6 +41,7 @@
 
 	  <rate-item-view movie="{{currentMovie}}"
 	                  on-rating-changed="_handleRatingChanged"
+	                  on-skip="_handleSkip"
 	  ></rate-item-view>
   </template>
 
@@ -94,7 +95,7 @@
 		  this.$.updateRatingRequest.generateRequest();
 	  }
 
-	  _handlePlayNext(e){
+	  _handleSkip(e){
 	  	this.$.playNextRequest.generateRequest()
 	  }
   }

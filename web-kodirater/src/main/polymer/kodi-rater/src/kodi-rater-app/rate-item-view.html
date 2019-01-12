@@ -18,12 +18,14 @@
 			}
 
 			paper-card {
-				max-width: 500px;
+				min-width: 100%;
 				min-height: 100vh;
+				flex-grow: 1;
 			}
 
 			.movie-header {
 				@apply --paper-font-headline;
+				flex-grow: 1;
 			}
 
 			.movie-light {
@@ -49,7 +51,28 @@
 				flex-wrap: wrap;
 				margin-top: 25px;
 				margin-bottom: 25px;
-				justify-content: space-evenly;
+				justify-content: space-around;
+			}
+
+			.actions {
+				display: flex;
+				flex-direction: row;
+				flex-wrap: wrap;
+				margin-top: 25px;
+				margin-bottom: 25px;
+				justify-content: center;
+			}
+
+			.delete_action {
+				flex-grow: 1;
+				background-color: hotpink;
+				height: 64px;
+			}
+
+			.skip_action {
+				flex-grow: 2;
+				background-color: cornflowerblue;
+				height: 64px;
 			}
 
 			.movie-reserve {
@@ -97,12 +120,14 @@
 		</style>
 		<paper-card image="[[movie.thumbnailHttpUrl]]">
 			<div class="card-content">
+
 				<div class="movie-header">[[movie.title]]
 					<div class="movie-duration movie-light">
 						<iron-icon icon="av:av-timer"></iron-icon>
 						<span>[[_formatDuration(movie.duration)]]</span>
 					</div>
 				</div>
+
 				<p>[[movie.tagline]]</p>
 				<div class="movie-rating">
 					<iron-icon class$="[[_classForStar(1,movie)]]" data-rating="1" icon="star"
@@ -116,10 +141,19 @@
 					<iron-icon class$="[[_classForStar(5,movie)]]" data-rating="5" icon="star"
 					           on-click="_setRating"></iron-icon>
 				</div>
+				<div class="actions">
+					<paper-button class="delete_action" raised on-click="_delete">
+						<iron-icon icon="icons:delete"></iron-icon>
+						DELETE
+					</paper-button>
+					<paper-button  class="skip_action" raised on-click="_skip">
+						<iron-icon icon="av:skip-next"></iron-icon>
+						NEXT
+					</paper-button>
+				</div>
 				<div class="tags">
 					<template is="dom-repeat" items="{{movie.tag}}">
-						<div class$="[[_classForTag(selectedTags,item)]]"
-						     data-tagname$="{{item}}"
+						<div class$="[[_classForTag(selectedTags,item)]]" data-tagname$="{{item}}"
 						     on-click="_toggleTag">
 							<span>[[item]]</span>
 						</div>
@@ -153,47 +187,35 @@
 		}
 
 		_formatDuration(totalSeconds) {
-
-			if (!totalSeconds)
-				return "unknown"
-
+			if (!totalSeconds) return "unknown";
 			var date = new Date(1970, 0, 1);
 			date.setSeconds(totalSeconds);
 			return date.toTimeString().replace(/.*(\d{2}:\d{2}:\d{2}).*/, "$1");
 		}
 
 		_classForStar(star, movie) {
-			if (!movie || !movie.userrating)
-				return "star_grey";
+			if (!movie || !movie.userrating) return "star_grey";
 			var rating = Math.round(movie.userrating / 2);
-			if (rating >= star)
-				return "star_gold"
+			if (rating >= star) return "star_gold";
 			return "star_grey";
 		}
 
 		_classForTag(selectedTags, tagname) {
 			const tag = tagname;
-			let containsTag = _.find(selectedTags, (t) => {
-				let found = (t == tag);
+
+			let containsTag = _.find(selectedTags, t => {
+				let found = t == tag;
 				return found;
 			});
-			if (!selectedTags
-					|| selectedTags.length === 0
-					|| !containsTag)
-				return "taglabel";
 
-
+			if (!selectedTags || selectedTags.length === 0 || !containsTag) return "taglabel";
 			return "taglabel_selected";
 		}
 
 		_setRating(e) {
-			if (!this.movie)
-				return;
-
+			if (!this.movie) return;
 			const rating = e.target.dataset.rating;
-
 			this.movie.userrating = rating * 2;
-
 			this.dispatchEvent(new CustomEvent('rating-changed', {
 				bubbles: true,
 				composed: true,
@@ -201,22 +223,33 @@
 			}));
 		}
 
-		_toggleTag(e) {
-			if (!this.movie)
-				return;
-
-			const tag = e.currentTarget.dataset.tagname;
-
-			if (!_.find(this.selectedTags, (t) => {
-				return (t == tag)
-			}))
-				this.selectedTags.push(tag)
-			else
-				_.remove(this.selectedTags, (t) => {
-					return (t == tag);
-				})
-			e.currentTarget.className = this._classForTag(this.selectedTags, tag)
+		_skip(e) {
+			this.dispatchEvent(new CustomEvent('skip', {
+				bubbles: true,
+				composed: true
+			}));
 		}
+
+		_delete(e) {
+			if (!this.movie) return;
+			this.dispatchEvent(new CustomEvent('delete', {
+				bubbles: true,
+				composed: true,
+				detail: this.movie
+			}));
+		}
+
+		_toggleTag(e) {
+			if (!this.movie) return;
+			const tag = e.currentTarget.dataset.tagname;
+			if (!_.find(this.selectedTags, t => {
+				return t == tag;
+			})) this.selectedTags.push(tag); else _.remove(this.selectedTags, t => {
+				return t == tag;
+			});
+			e.currentTarget.className = this._classForTag(this.selectedTags, tag);
+		}
+
 	}
 
 	window.customElements.define(RateItemView.is, RateItemView);</script>
