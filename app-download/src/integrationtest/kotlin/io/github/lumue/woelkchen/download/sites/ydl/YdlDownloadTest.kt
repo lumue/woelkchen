@@ -12,7 +12,7 @@ class YdlDownloadTest : AbstractDownloadTest() {
         get() = YdlResolver()
 
     override val urlList: List<String>
-        get() = listOf(GETDOWN_TESTVIDEO_URL)
+        get() = listOf()
 
 
 
