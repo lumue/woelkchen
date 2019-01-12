@@ -21,6 +21,14 @@
 	  ></iron-ajax>
 
 	  <iron-ajax
+			  id="playNextRequest"
+			  url="[[apiUrl]]/player/next"
+			  handle-as="json"
+			  method="get"
+			  content-type="application/json"
+	  ></iron-ajax>
+
+	  <iron-ajax
 			  auto
 			  id="getPlayingRequest"
 			  url="[[apiUrl]]/movies/playing"
@@ -31,7 +39,9 @@
 	  ></iron-ajax>
 
 
-	  <rate-item-view movie="{{currentMovie}}" on-rating-changed="_handleRatingChanged"></rate-item-view>
+	  <rate-item-view movie="{{currentMovie}}"
+	                  on-rating-changed="_handleRatingChanged"
+	  ></rate-item-view>
   </template>
 
   <script>/**
@@ -82,6 +92,10 @@
 		  this.$.updateRatingRequest.body=JSON.stringify(e.detail);
 		  this.$.updateRatingRequest.url=this.apiUrl+"/movies/"+this.currentMovie.movieid+"/rating"
 		  this.$.updateRatingRequest.generateRequest();
+	  }
+
+	  _handlePlayNext(e){
+	  	this.$.playNextRequest.generateRequest()
 	  }
   }
 

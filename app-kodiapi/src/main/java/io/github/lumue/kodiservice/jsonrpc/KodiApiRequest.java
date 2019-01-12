@@ -2,6 +2,7 @@ package io.github.lumue.kodiservice.jsonrpc;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import org.jetbrains.annotations.Nullable;
 
 import javax.print.attribute.IntegerSyntax;
 import java.util.HashMap;
@@ -77,5 +78,13 @@ public class KodiApiRequest extends KodiApiMessage{
 		Map<String,Object> params=new HashMap<>();
 		params.put("properties", MOVIE_PROPERTIES_ALL);
 		return new KodiApiRequest("VideoLibrary.GetMovies",params);
+	}
+	
+	@Nullable
+	public static KodiApiRequest playNext() {
+		Map<String,Object> params=new HashMap<>();
+		params.put("playerid", 1L);
+		params.put("to", "next");
+		return new KodiApiRequest("Player.GoTo",params);
 	}
 }
