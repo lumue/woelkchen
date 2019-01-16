@@ -25,7 +25,7 @@ apply plugin: 'kotlin-spring'
 
 apply plugin: 'org.springframework.boot'
 bootJar {
-	mainClassName = 'io.github.lumue.woelkchen.download.app.DownloadserviceApplication'
+	mainClassName = 'io.github.lumue.woelkchen.download.app.DownloadserviceApplicationKt'
 }
 
 apply plugin: 'io.spring.dependency-management'
