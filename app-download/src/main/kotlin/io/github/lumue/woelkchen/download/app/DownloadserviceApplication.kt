@@ -6,10 +6,10 @@ import org.springframework.boot.runApplication
 
 @Suppress("RedundantModalityModifier")
 @SpringBootApplication(scanBasePackages = ["io.github.lumue.woelkchen.download"])
-open class DownloadserviceApplication
+open class DownloadserviceApplication {
 
     fun main(args: Array<String>) {
         runApplication<DownloadserviceApplication>(*args)
     }
-
+}
 
