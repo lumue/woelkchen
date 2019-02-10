@@ -92,7 +92,7 @@ fun XhVideoPageModel.extractDownloadMetadata(): LocationMetadata.DownloadMetadat
 }
 
 fun XhVideoPageModel.extractStreamInfo(streamId: String): LocationMetadata.MediaStreamMetadata {
-    val url =  URL(this.sources.download[streamId]?.link)
+    val url =  URL("https://xhamster.com/"+this.sources.download[streamId]?.link)
     val expectedSize = url.getContentLength()
     return LocationMetadata.MediaStreamMetadata(streamId, url.toExternalForm(), mapOf(), LocationMetadata.ContentType.CONTAINER,"mp4","mp4", expectedSize)
 }

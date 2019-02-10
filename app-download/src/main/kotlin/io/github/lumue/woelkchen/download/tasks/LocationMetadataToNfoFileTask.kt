@@ -46,7 +46,7 @@ fun main(args: Array<String>) {
             }
 
 
-    fileProcessor(path = "/mnt/nasbox/media/adult/2019")
+    fileProcessor(path = "/mnt/nasbox/media/adult/2019 ")
 
 
 }

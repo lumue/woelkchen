@@ -13,4 +13,4 @@ EXPOSE 8001
 VOLUME ["/woelkchen/download"]
 VOLUME ["/downloads"]
 
-ENTRYPOINT ["java","-Xms20M","-Xmx100M","-Dwoelkchen.download.path.home=/woelkchen/download","-Dwoelkchen.download.path.download=/downloads","-jar","/app.jar"]
+ENTRYPOINT ["java","-Xms20M","-Xmx100M","-Dwoelkchen.download.path.home=/woelkchen/download","-Dwoelkchen.download.path.download=/downloads","-jar","/app.jar","--spring.config.location=file:/woelkchen/download/download.properties"]

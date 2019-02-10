@@ -59,6 +59,8 @@ repositories {
 dependencies {
 	compile('org.springframework.boot:spring-boot-starter-web')
 	compile('org.springframework.boot:spring-boot-starter-actuator')
+	compile group: 'de.codecentric', name: 'spring-boot-admin-starter-server', version: '2.1.2'
+
 	compile("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
 	compile("org.jetbrains.kotlin:kotlin-reflect")
 
