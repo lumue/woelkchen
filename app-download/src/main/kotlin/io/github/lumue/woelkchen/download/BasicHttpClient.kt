@@ -93,7 +93,7 @@ open class BasicHttpClient(val password: String = "",
             login()
 
 
-        val targetfile = targetPath + File.separator + m.contentMetadata.title + "." + m.downloadMetadata.selectedStreams[0].filenameExtension
+        val targetfile = targetPath + File.separator + (m.contentMetadata.title).replace("/","-") + "." + m.downloadMetadata.selectedStreams[0].filenameExtension
         logger.debug("downloading from " + m.downloadMetadata.selectedStreams[0].url + " to " + targetfile)
 
 

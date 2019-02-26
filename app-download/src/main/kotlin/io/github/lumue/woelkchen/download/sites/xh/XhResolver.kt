@@ -154,7 +154,6 @@ data class XhVideoPageModel(
         @JsonProperty("description") val description: String = "",
         @JsonProperty("mp4File") val mp4File: String = "",
         @JsonProperty("spriteCount") val spriteCount: Int = 0,
-        @JsonProperty("playerThumbURL") val playerThumbURL: String = "",
         @JsonProperty("sources") val sources: Sources = Sources(),
         @JsonProperty("dimensions") val dimensions: JsonNode?=null,
         @JsonProperty("categories") val categories: List<Category> = listOf(),
