@@ -1,7 +1,7 @@
 chrome.contextMenus.onClicked.addListener(function(info, tab) {
 	var contentUrl=[info.linkUrl];
 
-	fetch("http://localhost:8001/downloads", {
+	fetch("http://media:7011/downloads", {
 		method: "POST",
 		headers: {
 			'Accept': 'application/json, text/plain, */*',
