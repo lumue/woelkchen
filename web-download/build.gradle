@@ -1,0 +1,55 @@
+plugins {
+	id "com.moowork.node" version "1.3.1"
+}
+
+
+apply plugin: 'java'
+
+def webAppDir="${projectDir}/src/main/web/download-console"
+def webAppBuildScript="${webAppDir}/node_modules/@angular/cli/bin/ng"
+def webAppBuildDir = "${webAppDir}/dist/download-console"
+def generatedWebResourcesDir = "${projectDir}/generated-web-resources"
+
+sourceSets {
+	main {
+		output.dir(generatedWebResourcesDir, builtBy: 'generateWebResources')
+	}
+}
+
+//a task that generates the resources:
+task generateWebResources(type: Copy,dependsOn: 'webAppBuild'){
+	doFirst{
+		file("${generatedWebResourcesDir}/static").mkdir()
+	}
+	into "${generatedWebResourcesDir}/static"
+	from webAppBuildDir
+}
+
+generateWebResources.dependsOn('webAppBuild')
+
+node {
+	version = '10.15.3'
+	npmVersion = 'latest'
+	distBaseUrl = 'https://nodejs.org/dist'
+	nodeModulesDir = file(webAppDir)
+	download = true
+}
+
+
+task webAppBuild(type: NodeTask, dependsOn: npmInstall) {
+	script=file(webAppBuildScript)
+	execOverrides {
+		it.workingDir = webAppDir
+		it.args=[webAppBuildScript,"build"]
+	}
+
+}
+
+
+clean.doFirst {
+	delete "${webAppDir}/bower_components"
+	delete "${webAppDir}/node_modules"
+	delete "${webAppDir}/etc"
+	delete "${webAppDir}/dist"
+	delete generatedWebResourcesDir
+}
