@@ -16,7 +16,7 @@ import io.github.lumue.nfotools.Movie
         .withTagline(this.contentMetadata.description)
 
      this.contentMetadata.tags
-            .map { tag ->  tag.id}
+            .map { tag ->  tag.name}
             .map{tagstring->tagstring.replace("/tags/","") }
             .map { tagstring->tagstring.replace("/categories/","") }
             .map { tagstring->tagstring.replace("/channels/","") }
