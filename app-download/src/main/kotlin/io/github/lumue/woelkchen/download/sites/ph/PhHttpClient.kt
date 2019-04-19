@@ -87,7 +87,6 @@ class PhResolver(val httpClient: PhHttpClient) : ResolveMetadataStep {
 
         throw ResolveException("Document ${l.url} does not seem to be a pornhub page")
 
-        return document
     }
 
     private suspend fun MediaLocation.contentAsString(additionalHeaders: Map<String, String> = mapOf<String,String>()): String? {
