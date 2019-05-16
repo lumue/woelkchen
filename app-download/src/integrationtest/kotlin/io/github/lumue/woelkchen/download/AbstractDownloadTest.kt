@@ -52,27 +52,27 @@ abstract class AbstractDownloadTest {
 
     @Test
     fun testDownload() {
-        runBlocking {
-            fun progressHandler(name: String) = fun(p: Long, time: Long, t: Long) {
-                var seconds = TimeUnit.MILLISECONDS.toSeconds(time)
-                if (seconds < 1) seconds = 1
-                logger.debug(" $p of $t in ${seconds}s. ${p / seconds} b/s of $name downloaded")
-            }
-
-            urlList
-                    .forEach {
-                        val l = MediaLocation(it, LocalDateTime.now())
-                        val metadata = resolver.retrieveMetadata(l)
-                        val downloadResult = downloader.downloadContent(metadata,
-                                downloadPath,
-                                progressHandler(metadata.contentMetadata.title)
-                        )
-                        assert(File(downloadResult.filename).exists())
-                        val out = FileOutputStream(downloadResult.filename + ".meta.json")
-                        LocationMetadataWriter().write(metadata, out)
-                        out.close()
-                    }
-        }
+//        runBlocking {
+//            fun progressHandler(name: String) = fun(p: Long, time: Long, t: Long) {
+//                var seconds = TimeUnit.MILLISECONDS.toSeconds(time)
+//                if (seconds < 1) seconds = 1
+//                logger.debug(" $p of $t in ${seconds}s. ${p / seconds} b/s of $name downloaded")
+//            }
+//
+//            urlList
+//                    .forEach {
+//                        val l = MediaLocation(it, LocalDateTime.now())
+//                        val metadata = resolver.retrieveMetadata(l)
+//                        val downloadResult = downloader.downloadContent(metadata,
+//                                downloadPath,
+//                                progressHandler(metadata.contentMetadata.title)
+//                        )
+//                        assert(File(downloadResult.filename).exists())
+//                        val out = FileOutputStream(downloadResult.filename + ".meta.json")
+//                        LocationMetadataWriter().write(metadata, out)
+//                        out.close()
+//                    }
+//        }
     }
 
     protected abstract val downloader: DownloadFileStep
