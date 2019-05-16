@@ -134,8 +134,8 @@ data class PageInitials(
     ) {
         @JsonIgnoreProperties(ignoreUnknown = true)
         data class Category(
-                @JsonProperty("name") val name: String = "",
-                @JsonProperty("url") val url: String = "",
+                @JsonProperty("name") val name: String? = "",
+                @JsonProperty("url") val url: String? = "",
                 @JsonProperty("sponsor-tag") val sponsorTag: Boolean = false,
                 @JsonProperty("pornstar") val pornstar: Boolean = false,
                 @JsonProperty("id") val id: String? = "",

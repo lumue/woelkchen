@@ -114,16 +114,18 @@ fun XhVideoPageModel.extractContentMetadata(): LocationMetadata.ContentMetadata 
 private val XhVideoPageModel.actors: Set<LocationMetadata.ContentMetadata.Actor>
     get() {
         return categories
+                .filter{category -> category.name!=null&&category.url!=null }
                 .filter { category -> category.pornstar  }
-                .map { category -> LocationMetadata.ContentMetadata.Actor(category.url,category.name) }
+                .map { category -> LocationMetadata.ContentMetadata.Actor(category.url!!, category.name!!) }
                 .toCollection(mutableSetOf())
     }
 
 private val XhVideoPageModel.tags: Set<LocationMetadata.ContentMetadata.Tag>
     get() {
         return categories
+                .filter{category -> category.name!=null&&category.url!=null }
                 .filter { category -> !category.pornstar  }
-                .map { category -> LocationMetadata.ContentMetadata.Tag(category.url,category.name) }
+                .map { category -> LocationMetadata.ContentMetadata.Tag(category.url!!, category.name!!) }
                 .toCollection(mutableSetOf())
     }
 
@@ -169,9 +171,8 @@ data class XhVideoPageModel(
 
     @JsonIgnoreProperties(ignoreUnknown = true)
     data class Category(
-            @JsonProperty("name") val name: String = "",
-            @JsonProperty("url") val url: String = "",
-            @JsonProperty("sponsor-tag") val sponsorTag: Boolean = false,
+            @JsonProperty("name") val name: String? = "",
+            @JsonProperty("url") val url: String? = "",
             @JsonProperty("pornstar") val pornstar: Boolean = false,
             @JsonProperty("id") val id: String? = "",
             @JsonProperty("description") val description: Any? = Any()
