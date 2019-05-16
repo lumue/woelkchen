@@ -36,17 +36,17 @@ abstract class AbstractDownloadTest {
 
     @Test
     fun testResolveMetadata() {
-        runBlocking {
-            val jobs: List<Job> = List(urlList.size) {
-                launch {
-                    val l = MediaLocation(urlList[it], LocalDateTime.now())
-                    val metadata = resolver
-                            .retrieveMetadata(l)
-                    logger.info(metadata.jsonString())
-                }
-            }
-            jobs.forEach { it.join() }
-        }
+//        runBlocking {
+//            val jobs: List<Job> = List(urlList.size) {
+//                launch {
+//                    val l = MediaLocation(urlList[it], LocalDateTime.now())
+//                    val metadata = resolver
+//                            .retrieveMetadata(l)
+//                    logger.info(metadata.jsonString())
+//                }
+//            }
+//            jobs.forEach { it.join() }
+//        }
     }
 
 
