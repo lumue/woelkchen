@@ -69,7 +69,7 @@ data class PageInitials(
             @JsonProperty("text") val text: String = "",
             @JsonProperty("created") val created: Int = 0,
             @JsonProperty("metaItemprop") val metaItemprop: Boolean = false,
-            @JsonProperty("author") val author: Author = Author(),
+            @JsonProperty("author") val author: Author? = Author(),
             @JsonProperty("replyTo") val replyTo:  JsonNode? = null
 
     ) {
@@ -83,7 +83,7 @@ data class PageInitials(
                 @JsonProperty("thumbURL") val thumbURL: String? = "",
                 @JsonProperty("isOnline") val isOnline: Boolean = false,
                 @JsonProperty("id") val id: Int = 0,
-                @JsonProperty("pageURL") val pageURL: String = "",
+                @JsonProperty("pageURL") val pageURL: String? = "",
                 @JsonProperty("retired") val retired: Boolean = false,
                 @JsonProperty("verified") val verified: Boolean = false,
                 @JsonProperty("name") val name: String = ""
