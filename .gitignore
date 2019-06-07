@@ -31,3 +31,10 @@
 
 krp_home/
 src/main/resources/static
+# Project exclude paths
+/app-kodiapi/out/
+/app-kodiapi/out/production/classes/
+/app-kodiapi/out/test/classes/
+/web-kodirater/src/main/polymer/kodi-rater/node_modules/
+/app-download/error.log
+/app-download/error.urls
