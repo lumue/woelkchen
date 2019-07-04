@@ -27,7 +27,7 @@ before_script:
   - ./gradlew npmInstall
 
 script:
-  - ./gradlew docker
+  - ./gradlew docker -x integrationTest
 
 
 after_success:
