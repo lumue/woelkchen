@@ -3,6 +3,9 @@ package io.github.lumue.woelkchen.download
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.annotation.JsonProperty
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import java.io.FileOutputStream
 import java.time.Duration
 import java.time.LocalDateTime
 
@@ -52,4 +55,14 @@ data class LocationMetadata(@JsonProperty("url") val url: String,
         data class Actor(@JsonProperty("id") val id: String,@JsonProperty("name") val name: String)
     }
 
+
+    suspend fun writeToFile(filename:String) {
+        val out=withContext (Dispatchers.IO){
+            FileOutputStream(filename)
+        }
+        LocationMetadataWriter().write(this, out)
+        withContext(Dispatchers.IO) {
+            out.close()
+        }
+    }
 }

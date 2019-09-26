@@ -7,19 +7,18 @@ import org.slf4j.LoggerFactory
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.github.lumue.woelkchen.download.*
-import java.io.FileOutputStream
+import java.io.File
 import javax.script.Invocable
 import javax.script.ScriptEngineManager
 
 
 class PhSite : SiteClient{
 
-    private val logger = LoggerFactory.getLogger(this.javaClass.name)
 
-    val httpClient: PhHttpClient = PhHttpClient()
+    private val httpClient: PhHttpClient = PhHttpClient()
 
-    val downloader: io.github.lumue.woelkchen.download.DownloadFileStep = BasicHttpDownload(httpClient)
-    val resolver: ResolveMetadataStep = PhResolver(httpClient)
+    private val downloader: DownloadFileStep = BasicHttpDownload(httpClient)
+    private val resolver: ResolveMetadataStep = PhResolver(httpClient)
 
     override suspend fun downloadMetadata(l: MediaLocation): LocationMetadata {
         return resolver.retrieveMetadata(l)
@@ -34,11 +33,12 @@ class PhSite : SiteClient{
                 targetPath,
                 progressHandler
         )
-        val out = FileOutputStream(downloadResult.filename + ".meta.json")
-        LocationMetadataWriter().write(metadata, out)
-        out.close()
+
+        metadata.writeToFile(targetPath + File.separator + (metadata.contentMetadata.title).replace("/","-") + ".meta.json")
         return downloadResult
     }
+
+
 
 }
 
@@ -57,7 +57,7 @@ class PhResolver(val httpClient: PhHttpClient) : ResolveMetadataStep {
     private val logger = LoggerFactory.getLogger(this.javaClass.name)
 
     override suspend fun retrieveMetadata(l: MediaLocation): LocationMetadata {
-        logger.debug("resolving metadata for location " + l)
+        logger.debug("resolving metadata for location $l")
         val pageDocument = loadVideoPageDocument(l)
         val page=PhVideoPage(pageDocument)
 

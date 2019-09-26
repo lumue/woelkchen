@@ -111,7 +111,7 @@ open class BasicHttpClient(val password: String = "",
     suspend fun CloseableHttpClient.download(url: String,
                                              headers: Map<String, String>,
                                              filename: String,
-                                             progressConsumer: ((readBytes: Long, time: Long, totalBytes: Long) -> Unit)?) : io.github.lumue.woelkchen.download.FileDownloadResult {
+                                             progressConsumer: ((readBytes: Long, time: Long, totalBytes: Long) -> Unit)?) : FileDownloadResult {
         use { httpClient ->
 
             val get = HttpGet(url)
@@ -133,7 +133,7 @@ open class BasicHttpClient(val password: String = "",
                             val entity = response.entity
                             val expectedSize = entity.contentLength
                             var append = false
-                            var downloadedBytes = get.resumeAt;
+                            var downloadedBytes = get.resumeAt
                             if (get.resumeAt > 0L) {
                                 if (status != HttpStatus.SC_PARTIAL_CONTENT) {
                                     Files.deleteIfExists(File(filename).toPath())
@@ -150,7 +150,7 @@ open class BasicHttpClient(val password: String = "",
                                     var bytesRead = 0
                                     val buffer = ByteArray(4096)
                                     time += measureTimeMillis { bytesRead = inputStream.read(buffer) }
-                                    downloadedBytes += bytesRead;
+                                    downloadedBytes += bytesRead
                                     progressConsumer?.invoke(downloadedBytes, time, expectedSize)
                                     while (bytesRead != -1 && NonCancellable.isActive) {
                                         time += measureTimeMillis {
@@ -162,7 +162,7 @@ open class BasicHttpClient(val password: String = "",
                                     }
                                 }
                             }
-                            it.resume(io.github.lumue.woelkchen.download.FileDownloadResult(url, filename, expectedSize, downloadedBytes, time))
+                            it.resume(FileDownloadResult(url, filename, expectedSize, downloadedBytes, time))
                         } else {
                             val msg = "Unexpected response status: $status on $get"
                             logger.error(msg)
@@ -242,7 +242,7 @@ private fun HttpGet.findResumeAtRangeHeader(): Header? {
 }
 
 fun CookieStore.names(): List<String> {
-    var cookienames = mutableListOf<String>()
+    val cookienames = mutableListOf<String>()
     cookies.forEach({
         cookienames.add(it.name)
     })

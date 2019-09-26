@@ -1,13 +1,14 @@
 package io.github.lumue.woelkchen.download.sites.xh
 
 import io.github.lumue.woelkchen.download.*
+import java.io.File
 import java.io.FileOutputStream
 
 class XhSite:SiteClient {
 
     val httpClient: XhHttpClient = XhHttpClient("dirtytom74", "ddl85s")
 
-    val downloader: io.github.lumue.woelkchen.download.DownloadFileStep = BasicHttpDownload(httpClient)
+    val downloader: DownloadFileStep = BasicHttpDownload(httpClient)
     val resolver: ResolveMetadataStep = XhResolver(httpClient)
 
     override suspend fun downloadMetadata(l: MediaLocation): LocationMetadata {
@@ -20,9 +21,7 @@ class XhSite:SiteClient {
                 targetPath,
                 progressHandler
         )
-        val out = FileOutputStream(downloadResult.filename + ".meta.json")
-        LocationMetadataWriter().write(metadata, out)
-        out.close()
+        metadata.writeToFile(targetPath + File.separator + (metadata.contentMetadata.title).replace("/","-") + ".meta.json")
         return downloadResult
     }
 }
