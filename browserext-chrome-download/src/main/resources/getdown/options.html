@@ -1,14 +1,31 @@
 <!DOCTYPE html>
 <html>
-<head>
-  <title>getdown-chrome options</title>
-  <style>
-    body: { padding: 10px; }
-  </style>
-</head>
+    <script>
+        apply_location(){
 
-<body>
-	<label></label>
-	<input handle="getdown_location" type="text" />
-</body>
+        }
+    </script>
+    <head>
+        <title>getdown-chrome options</title>
+        <style>
+            body {
+                padding: 10px;
+            }
+        </style>
+    </head>
+
+    <body>
+        <label for="location_input">
+            getdown host url
+        </label>
+        <input id="location_input"
+               handle="getdown_location"
+               type="text"/>
+        <button id="location_apply_button"
+                type="button"
+                onclick="apply_location()"
+        >
+            apply
+        </button>
+    </body>
 </html>
