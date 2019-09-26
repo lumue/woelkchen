@@ -47,7 +47,7 @@ data class XhVideoPage(
             @JsonProperty("options") val options: JsonNode? = null,
             @JsonProperty("mlVideoRelated") val mlVideoRelated: MlVideoRelated? = MlVideoRelated(),
             @JsonProperty("userComment") val userComment: UserComment? = UserComment(),
-            @JsonProperty("gaSettings") val gaSettings: GaSettings = GaSettings(),
+            @JsonProperty("gaSettings") val gaSettings: GaSettings? = GaSettings(),
             @JsonProperty("staticURL") val staticURL: String = "",
             @JsonProperty("trustURLs") val trustURLs: List<String> = listOf(),
             @JsonProperty("recaptchaKey") val recaptchaKey: String = "",
@@ -200,14 +200,14 @@ data class XhVideoPage(
             }
         }
 
-
+        @JsonIgnoreProperties(ignoreUnknown = true)
         data class GaSettings(
                 @JsonProperty("events") val events: List<Any> = listOf(),
                 @JsonProperty("dimensions") val dimensions: Map<String, Any> = mapOf(),
                 @JsonProperty("sampling") val sampling: Int = 0,
                 @JsonProperty("trackerId") val trackerId: String = "",
                 @JsonProperty("amp") val amp: Boolean = false,
-                @JsonProperty("fields") val fields: Fields = Fields()
+                @JsonProperty("fields") val fields: Fields? = Fields()
         ) {
 
             data class Fields(
