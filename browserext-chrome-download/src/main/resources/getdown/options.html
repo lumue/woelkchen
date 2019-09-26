@@ -1,10 +1,5 @@
 <!DOCTYPE html>
 <html>
-    <script>
-        apply_location(){
-
-        }
-    </script>
     <head>
         <title>getdown-chrome options</title>
         <style>
@@ -15,17 +10,17 @@
     </head>
 
     <body>
-        <label for="location_input">
-            getdown host url
+        <label for="service_url_input">
+            service url
         </label>
-        <input id="location_input"
-               handle="getdown_location"
-               type="text"/>
-        <button id="location_apply_button"
+        <input id="service_url_input"
+               handle="service_url"
+               type="url"/>
+        <button id="apply_button"
                 type="button"
-                onclick="apply_location()"
         >
             apply
         </button>
+        <script src="options.js"></script>
     </body>
 </html>
