@@ -38,3 +38,9 @@ src/main/resources/static
 /web-kodirater/src/main/polymer/kodi-rater/node_modules/
 /app-download/error.log
 /app-download/error.urls
+.directory
+build
+woelkchen.iml
+.gradle
+.idea
+.work
