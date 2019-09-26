@@ -12,13 +12,37 @@ import java.io.FileOutputStream
 import java.time.LocalDateTime
 import java.util.concurrent.TimeUnit
 
-abstract class AbstractDownloadTest {
+abstract class ResolveTestBase {
+    protected abstract val urlList: List<String>
+    private val logger = LoggerFactory.getLogger(this.javaClass.name)
+    @Test
+    fun testResolveMetadata() {
+        runBlocking {
+            val jobs: List<Job> = List(urlList.size) {
+                launch {
+                    val l = MediaLocation(urlList[it], LocalDateTime.now())
+                    val metadata = resolver
+                            .retrieveMetadata(l)
+                    logger.info(metadata.jsonString())
+                }
+            }
+            jobs.forEach { it.join() }
+        }
+    }
+
+    protected abstract val resolver: ResolveMetadataStep
+}
+
+
+abstract class DownloadTestBase {
 
     protected abstract val urlList: List<String>
 
     private val logger = LoggerFactory.getLogger(this.javaClass.name)
 
     private val downloadPath = "./work/downloads"
+
+    protected abstract val resolver: ResolveMetadataStep
 
     @Before
     fun setup() {
@@ -34,20 +58,6 @@ abstract class AbstractDownloadTest {
     }
 
 
-    @Test
-    fun testResolveMetadata() {
-        runBlocking {
-            val jobs: List<Job> = List(urlList.size) {
-                launch {
-                    val l = MediaLocation(urlList[it], LocalDateTime.now())
-                    val metadata = resolver
-                               .retrieveMetadata(l)
-                    logger.info(metadata.jsonString())
-                }
-            }
-            jobs.forEach { it.join() }
-        }
-    }
 
 
     @Test
@@ -77,5 +87,5 @@ abstract class AbstractDownloadTest {
 
     protected abstract val downloader: DownloadFileStep
 
-    protected abstract val resolver: ResolveMetadataStep
+
 }

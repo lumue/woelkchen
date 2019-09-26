@@ -1,12 +1,12 @@
 package io.github.lumue.woelkchen.download.sites.ph
 
 
-import io.github.lumue.woelkchen.download.AbstractDownloadTest
+import io.github.lumue.woelkchen.download.DownloadTestBase
 import io.github.lumue.woelkchen.download.BasicHttpDownload
 import io.github.lumue.woelkchen.download.DownloadFileStep
 import io.github.lumue.woelkchen.download.ResolveMetadataStep
 
-class PhDownloadTest : AbstractDownloadTest() {
+class PhDownloadTest : DownloadTestBase() {
 
     private val httpClient : PhHttpClient = PhHttpClient()
 

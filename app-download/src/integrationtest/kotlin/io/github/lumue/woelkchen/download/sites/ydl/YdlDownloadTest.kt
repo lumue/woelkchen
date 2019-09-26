@@ -2,7 +2,7 @@ package io.github.lumue.woelkchen.download.sites.ydl
 
 import io.github.lumue.woelkchen.download.*
 
-class YdlDownloadTest : AbstractDownloadTest() {
+class YdlDownloadTest : DownloadTestBase() {
 
     private val httpClient : BasicHttpClient=YdlHttpClient()
 

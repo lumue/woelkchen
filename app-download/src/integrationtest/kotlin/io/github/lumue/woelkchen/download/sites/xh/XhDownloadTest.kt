@@ -1,12 +1,12 @@
 package io.github.lumue.woelkchen.download.sites.xh
 
 
-import io.github.lumue.woelkchen.download.AbstractDownloadTest
+import io.github.lumue.woelkchen.download.DownloadTestBase
 import io.github.lumue.woelkchen.download.BasicHttpDownload
 import io.github.lumue.woelkchen.download.DownloadFileStep
 import io.github.lumue.woelkchen.download.ResolveMetadataStep
 
-class XhDownloadTest : AbstractDownloadTest() {
+class XhDownloadTest : DownloadTestBase() {
 
     val httpClient : XhHttpClient = XhHttpClient("dirtytom74", "ddl85s")
 
