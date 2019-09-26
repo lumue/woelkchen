@@ -317,7 +317,7 @@ private data class PlayerJson(
             @JsonProperty("videoUrl")
             val videoUrl: String = ""
     )
-
+    @JsonIgnoreProperties(ignoreUnknown = true)
     data class NextVideo(
             @JsonProperty("duration")
             val duration: String = "",
