@@ -21,7 +21,7 @@ task generateWebResources(type: Copy,dependsOn: 'webAppBuild'){
 	doFirst{
 		file("${generatedWebResourcesDir}/static").mkdir()
 	}
-	into "${generatedWebResourcesDir}/static"
+	into "${generatedWebResourcesDir}/static/$project.name"
 	from webAppBuildDir
 }
 

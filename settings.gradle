@@ -6,5 +6,6 @@ include (
 		'app-download',
 		'app-media',
 		'web-kodirater',
-		'web-download'
+		'web-download',
+		'web-download-console'
 )
