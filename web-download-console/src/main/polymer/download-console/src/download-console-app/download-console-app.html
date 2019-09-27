@@ -1,0 +1,104 @@
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../../bower_components/sse-client/sse-client.html">
+<link rel="import" href="../../bower_components/iron-ajax/iron-ajax.html">
+<link rel="import" href="rate-item-view.html">
+
+<dom-module id="dowload-console-app">
+  <template>
+    <style>
+      :host {
+        display: block;
+      }
+    </style>
+
+	  <sse-client id="eventSource" url="[[apiUrl]]/events" on-message="_handleEvent"></sse-client>
+
+	  <iron-ajax
+			  id="updateRatingRequest"
+			  handle-as="json"
+			  method="put"
+			  content-type="application/json"
+	  ></iron-ajax>
+
+	  <iron-ajax
+			  id="playNextRequest"
+			  url="[[apiUrl]]/player/next"
+			  handle-as="json"
+			  method="get"
+			  content-type="application/json"
+	  ></iron-ajax>
+
+	  <iron-ajax
+			  auto
+			  id="getPlayingRequest"
+			  url="[[apiUrl]]/movies/playing"
+			  handle-as="json"
+			  method="get"
+			  content-type="application/json"
+			  last-response="{{currentMovie}}"
+	  ></iron-ajax>
+
+
+	  <rate-item-view movie="{{currentMovie}}"
+	                  on-rating-changed="_handleRatingChanged"
+	                  on-skip="_handleSkip"
+	  ></rate-item-view>
+  </template>
+
+  <script>/**
+   * @customElement
+   * @polymer
+   */
+  class KodiRaterApp extends Polymer.Element {
+	  static get is() {
+		  return 'dowload-console-app';
+	  }
+
+	  static get properties() {
+		  return {
+			  currentMovie: {
+				  type: Object,
+				  value: null,
+                  notify: true
+			  },
+			  apiUrl: {
+				  type: String,
+				  value: function (){
+				  	const localStorageItem=localStorage.getItem("apiUrl")
+					  if(localStorageItem==null)
+					  	return ""
+					  return localStorageItem
+				  },
+				  notify: true
+			  }
+		  };
+	  }
+
+	  connectedCallback() {
+		  super.connectedCallback()
+		  this.$.eventSource.connect()
+	  }
+
+	  disconnectedCallback() {
+		  super.disconnectedCallback()
+		  this.$.eventSource.close()
+	  }
+
+	  _handleEvent(data) {
+		  this.currentMovie=data.detail;
+	  }
+
+
+	  _handleRatingChanged(e) {
+		  this.$.updateRatingRequest.body=JSON.stringify(e.detail);
+		  this.$.updateRatingRequest.url=this.apiUrl+"/movies/"+this.currentMovie.movieid+"/rating"
+		  this.$.updateRatingRequest.generateRequest();
+	  }
+
+	  _handleSkip(e){
+	  	this.$.playNextRequest.generateRequest()
+	  }
+  }
+
+  window.customElements.define(KodiRaterApp.is, KodiRaterApp);</script>
+</dom-module>

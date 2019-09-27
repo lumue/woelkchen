@@ -1,0 +1,256 @@
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../../bower_components/iron-icons/iron-icons.html">
+<link rel="import" href="../../bower_components/iron-icons/communication-icons.html">
+<link rel="import" href="../../bower_components/iron-icons/av-icons.html">
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../../bower_components/paper-styles/color.html">
+<link rel="import" href="../../bower_components/paper-styles/typography.html">
+<link rel="import" href="../../bower_components/paper-card/paper-card.html">
+
+<dom-module id="rate-item-view">
+	<template>
+		<style is="custom-style">
+			body {
+				display: flex;
+				align-items: center;
+				justify-content: center;
+			}
+
+			paper-card {
+				min-width: 100%;
+				min-height: 100vh;
+				flex-grow: 1;
+			}
+
+			.movie-header {
+				@apply --paper-font-headline;
+				flex-grow: 1;
+			}
+
+			.movie-light {
+				color: var(--paper-grey-600);
+			}
+
+			.movie-duration {
+				float: right;
+				font-size: 15px;
+				vertical-align: middle;
+			}
+
+			.movie-rating {
+				display: flex;
+				flex-direction: row;
+				margin-top: 25px;
+				margin-bottom: 25px;
+			}
+
+			.tags {
+				display: flex;
+				flex-direction: row;
+				flex-wrap: wrap;
+				margin-top: 25px;
+				margin-bottom: 25px;
+				justify-content: space-around;
+			}
+
+			.actions {
+				display: flex;
+				flex-direction: row;
+				flex-wrap: wrap;
+				margin-top: 25px;
+				margin-bottom: 25px;
+				justify-content: center;
+			}
+
+			.delete_action {
+				flex-grow: 1;
+				background-color: hotpink;
+				height: 64px;
+			}
+
+			.skip_action {
+				flex-grow: 2;
+				background-color: cornflowerblue;
+				height: 64px;
+			}
+
+			.movie-reserve {
+				color: var(--google-blue-500);
+			}
+
+			iron-icon.star_gold {
+				--iron-icon-width: 32px;
+				--iron-icon-height: 32px;
+				color: var(--paper-amber-500);
+				flex-grow: 1;
+			}
+
+			iron-icon.star_grey {
+				--iron-icon-width: 32px;
+				--iron-icon-height: 32px;
+				color: var(--paper-grey-500);
+				flex-grow: 1;
+			}
+
+			.taglabel {
+				border: solid #0d47a1;
+				color: #0d47a1;
+				padding: 5px;
+				margin-right: 5px;
+				margin-bottom: 5px;
+				border-radius: 8px;
+				min-width: 70px;
+				justify-content: center;
+			}
+
+			.taglabel_selected {
+				border: solid #0d47a1;
+				background-color: #0d47a1;
+				color: #a8a8a8;
+				padding: 5px;
+				margin-right: 5px;
+				margin-bottom: 5px;
+				border-radius: 8px;
+				min-width: 70px;
+				justify-content: center;
+			}
+
+
+		</style>
+		<paper-card image="[[movie.thumbnailHttpUrl]]">
+			<div class="card-content">
+
+				<div class="movie-header">[[movie.title]]
+					<div class="movie-duration movie-light">
+						<iron-icon icon="av:av-timer"></iron-icon>
+						<span>[[_formatDuration(movie.duration)]]</span>
+					</div>
+				</div>
+
+				<p>[[movie.tagline]]</p>
+				<div class="movie-rating">
+					<iron-icon class$="[[_classForStar(1,movie)]]" data-rating="1" icon="star"
+					           on-click="_setRating"></iron-icon>
+					<iron-icon class$="[[_classForStar(2,movie)]]" data-rating="2" icon="star"
+					           on-click="_setRating"></iron-icon>
+					<iron-icon class$="[[_classForStar(3,movie)]]" data-rating="3" icon="star"
+					           on-click="_setRating"></iron-icon>
+					<iron-icon class$="[[_classForStar(4,movie)]]" data-rating="4" icon="star"
+					           on-click="_setRating"></iron-icon>
+					<iron-icon class$="[[_classForStar(5,movie)]]" data-rating="5" icon="star"
+					           on-click="_setRating"></iron-icon>
+				</div>
+				<div class="actions">
+					<paper-button class="delete_action" raised on-click="_delete">
+						<iron-icon icon="icons:delete"></iron-icon>
+						DELETE
+					</paper-button>
+					<paper-button  class="skip_action" raised on-click="_skip">
+						<iron-icon icon="av:skip-next"></iron-icon>
+						NEXT
+					</paper-button>
+				</div>
+				<div class="tags">
+					<template is="dom-repeat" items="{{movie.tag}}">
+						<div class$="[[_classForTag(selectedTags,item)]]" data-tagname$="{{item}}"
+						     on-click="_toggleTag">
+							<span>[[item]]</span>
+						</div>
+					</template>
+				</div>
+			</div>
+		</paper-card>
+	</template>
+
+	<script>/**
+	 * @customElement
+	 * @polymer
+	 */
+	class RateItemView extends Polymer.Element {
+		static get is() {
+			return 'rate-item-view';
+		}
+
+		static get properties() {
+			return {
+				movie: {
+					type: Object,
+					value: null
+				},
+				selectedTags: {
+					type: Array,
+					value: [],
+					notify: true
+				}
+			};
+		}
+
+		_formatDuration(totalSeconds) {
+			if (!totalSeconds) return "unknown";
+			var date = new Date(1970, 0, 1);
+			date.setSeconds(totalSeconds);
+			return date.toTimeString().replace(/.*(\d{2}:\d{2}:\d{2}).*/, "$1");
+		}
+
+		_classForStar(star, movie) {
+			if (!movie || !movie.userrating) return "star_grey";
+			var rating = Math.round(movie.userrating / 2);
+			if (rating >= star) return "star_gold";
+			return "star_grey";
+		}
+
+		_classForTag(selectedTags, tagname) {
+			const tag = tagname;
+
+			let containsTag = _.find(selectedTags, t => {
+				let found = t == tag;
+				return found;
+			});
+
+			if (!selectedTags || selectedTags.length === 0 || !containsTag) return "taglabel";
+			return "taglabel_selected";
+		}
+
+		_setRating(e) {
+			if (!this.movie) return;
+			const rating = e.target.dataset.rating;
+			this.movie.userrating = rating * 2;
+			this.dispatchEvent(new CustomEvent('rating-changed', {
+				bubbles: true,
+				composed: true,
+				detail: this.movie.userrating
+			}));
+		}
+
+		_skip(e) {
+			this.dispatchEvent(new CustomEvent('skip', {
+				bubbles: true,
+				composed: true
+			}));
+		}
+
+		_delete(e) {
+			if (!this.movie) return;
+			this.dispatchEvent(new CustomEvent('delete', {
+				bubbles: true,
+				composed: true,
+				detail: this.movie
+			}));
+		}
+
+		_toggleTag(e) {
+			if (!this.movie) return;
+			const tag = e.currentTarget.dataset.tagname;
+			if (!_.find(this.selectedTags, t => {
+				return t == tag;
+			})) this.selectedTags.push(tag); else _.remove(this.selectedTags, t => {
+				return t == tag;
+			});
+			e.currentTarget.className = this._classForTag(this.selectedTags, tag);
+		}
+
+	}
+
+	window.customElements.define(RateItemView.is, RateItemView);</script>
+</dom-module>

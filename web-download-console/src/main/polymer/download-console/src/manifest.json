@@ -1,0 +1,26 @@
+{
+  "name": "ratingtool",
+  "short_name": "ratingtool",
+  "description": "ratingtool for kodi videos",
+  "start_url": "/index.html",
+  "display": "standalone",
+  "theme_color": "#3f51b5",
+  "background_color": "#3f51b5",
+  "icons": [
+    {
+      "src": "images/manifest/icons8-kodi-64.png",
+      "sizes": "64x64",
+      "type": "image/png"
+    },
+    {
+      "src": "images/manifest/icons8-kodi-96.png",
+      "sizes": "128x128",
+      "type": "image/png"
+    },
+    {
+      "src": "images/manifest/icons8-kodi-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
