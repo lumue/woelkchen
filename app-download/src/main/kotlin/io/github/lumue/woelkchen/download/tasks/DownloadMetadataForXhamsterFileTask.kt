@@ -34,7 +34,7 @@ fun main(args: Array<String>) {
             handleFile = { handleFile(it) }
     )
 
-    processFiles("/mnt/nasbox/media/adult/")
+    processFiles("/mnt/debian-sdb/video/")
 }
 
 suspend fun handleFile(videofile: File) {

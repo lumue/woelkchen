@@ -1,9 +1,9 @@
 package io.github.lumue.woelkchen.download.util
 
-import io.github.lumue.woelkchen.download.LocationMetadata
 import io.github.lumue.nfotools.Movie
+import io.github.lumue.woelkchen.shared.metadata.MoviepageMetadata
 
- fun LocationMetadata.configureMovieBuilderWithLocationMetadata(movieBuilder: Movie.MovieBuilder) {
+fun MoviepageMetadata.configureMovieBuilderWithLocationMetadata(movieBuilder: Movie.MovieBuilder) {
     movieBuilder
         .withAired(contentMetadata.uploaded)
         .withDateAdded(contentMetadata.downloaded)

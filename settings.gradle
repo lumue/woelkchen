@@ -4,7 +4,7 @@ include (
 		'lib-shared',
 		'app-kodiapi',
 		'app-download',
-		'app-media',
+		'app-medialibrary',
 		'web-kodirater',
 		'web-download',
 		'web-download-console'

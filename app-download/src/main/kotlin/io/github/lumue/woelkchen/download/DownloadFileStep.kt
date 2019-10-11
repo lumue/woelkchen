@@ -1,7 +1,9 @@
 package io.github.lumue.woelkchen.download
 
+import io.github.lumue.woelkchen.shared.metadata.MoviepageMetadata
+
 interface DownloadFileStep {
-    suspend fun  downloadContent(m: io.github.lumue.woelkchen.download.LocationMetadata,
+    suspend fun  downloadContent(m: MoviepageMetadata,
                                  targetPath: String,
                                  progressHandler: ((readBytes: Long, time: Long, totalBytes: Long) -> Unit)?):
             io.github.lumue.woelkchen.download.FileDownloadResult

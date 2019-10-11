@@ -2,10 +2,12 @@ package io.github.lumue.woelkchen.download.sites.xh
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import getContentLength
-import io.github.lumue.woelkchen.download.LocationMetadata
 import io.github.lumue.woelkchen.download.ResolveMetadataStep
 import io.github.lumue.woelkchen.download.MediaLocation
 import io.github.lumue.woelkchen.download.sites.xh.XhVideoPage.InitialsJson.VideoModel
+import io.github.lumue.woelkchen.shared.metadata.MovieMetadata
+import io.github.lumue.woelkchen.shared.metadata.MoviepageMetadata
+import io.github.lumue.woelkchen.shared.metadata.Tag
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import org.slf4j.Logger
@@ -23,12 +25,12 @@ class XhResolver(private val xhHttpClient: XhHttpClient) : ResolveMetadataStep {
 
     private val logger = LoggerFactory.getLogger(this.javaClass.name)
 
-    override suspend fun retrieveMetadata(l: MediaLocation): LocationMetadata {
+    override suspend fun retrieveMetadata(l: MediaLocation): MoviepageMetadata {
         logger.debug("resolving metadata for location $l")
         val videoPage = l.getPage()
-        return LocationMetadata(
+        return MoviepageMetadata(
                 l.url,
-                videoPage.initialsJson.videoModel.extractContentMetadata(),
+                videoPage.extractContentMetadata(),
                 videoPage.extractDownloadMetadata()
         )
     }
@@ -40,6 +42,23 @@ class XhResolver(private val xhHttpClient: XhHttpClient) : ResolveMetadataStep {
     }
 
 
+}
+
+private fun XhVideoPage.extractContentMetadata(): MovieMetadata {
+    val tagsFromInitials = this.initialsJson.videoModel.tags
+    val tagsFromLdjson=this.ldJson.video?.tags?: mutableSetOf()
+    return MovieMetadata(this.initialsJson.videoModel.title ?: "",
+            description = this.initialsJson.videoModel.description,
+            tags = tagsFromInitials.union(tagsFromLdjson),
+            actors = this.initialsJson.videoModel.actors,
+            duration = Duration.ofSeconds(this.initialsJson.videoModel.duration),
+            views = this.initialsJson.videoModel.views,
+            uploaded = LocalDateTime.ofEpochSecond(this.initialsJson.videoModel.created, 0, ZoneOffset.UTC),
+            downloaded = LocalDateTime.now(),
+            hoster = "xhamster",
+            votes = this.initialsJson.videoModel.rating.likes,
+            resolution = 0
+    )
 }
 
 class XhVideoModelParser {
@@ -66,6 +85,14 @@ class XhVideoModelParser {
 
 }
 
+
+private val XhVideoPage.LdJson.Video.tags: Set<Tag>
+    get() {
+        return keywords!!
+                .filter { k-> k.isNotEmpty() }
+                .map { k -> Tag("xhamster-$k", k) }
+                .toCollection(mutableSetOf())
+    }
 
 private val Document.initialsJsonString: String
     get():String {
@@ -97,7 +124,7 @@ private val Document.ldJsonString: String
     }
 
 
-fun XhVideoPage.extractDownloadMetadata(): LocationMetadata.DownloadMetadata {
+fun XhVideoPage.extractDownloadMetadata(): MoviepageMetadata.DownloadMetadata {
     val streams = this.initialsJson.videoModel.sources.mp4.asSequence()
             .map { s -> extractStreamInfo(s.key) }
             .sortedByDescending { streamInfo -> streamInfo.id }
@@ -106,44 +133,31 @@ fun XhVideoPage.extractDownloadMetadata(): LocationMetadata.DownloadMetadata {
     val selectedStream = streams.firstOrNull()!!
     val selectedStreams = listOf(selectedStream)
     val additionalStreams = streams.minusElement(selectedStream).toList()
-    return LocationMetadata.DownloadMetadata(selectedStreams, additionalStreams)
+    return MoviepageMetadata.DownloadMetadata(selectedStreams, additionalStreams)
 }
 
-fun XhVideoPage.extractStreamInfo(streamId: String): LocationMetadata.MediaStreamMetadata {
+fun XhVideoPage.extractStreamInfo(streamId: String): MoviepageMetadata.MediaStreamMetadata {
     val url = URL(this.initialsJson.videoModel.sources.download[streamId]?.link)
     val expectedSize = url.getContentLength()
-    return LocationMetadata.MediaStreamMetadata(streamId, url.toExternalForm(), mapOf(), LocationMetadata.ContentType.CONTAINER, "mp4", "mp4", expectedSize)
+    return MoviepageMetadata.MediaStreamMetadata(streamId, url.toExternalForm(), mapOf(), MoviepageMetadata.ContentType.CONTAINER, "mp4", "mp4", expectedSize)
 }
 
-fun VideoModel.extractContentMetadata(): LocationMetadata.ContentMetadata {
-    return LocationMetadata.ContentMetadata(this.title ?: "",
-            description = this.description,
-            tags = this.tags,
-            actors = this.actors,
-            duration = Duration.ofSeconds(this.duration),
-            views = this.views,
-            uploaded = LocalDateTime.ofEpochSecond(this.created, 0, ZoneOffset.UTC),
-            downloaded = LocalDateTime.now(),
-            hoster = "xhamster",
-            votes = this.rating.likes
-    )
-}
 
-private val VideoModel.actors: Set<LocationMetadata.ContentMetadata.Actor>
+private val VideoModel.actors: Set<MovieMetadata.Actor>
     get() {
         return categories
                 .filter { category -> category.name != null && category.url != null }
                 .filter { category -> category.pornstar }
-                .map { category -> LocationMetadata.ContentMetadata.Actor(category.url!!, category.name!!) }
+                .map { category -> MovieMetadata.Actor(category.url!!, category.name!!) }
                 .toCollection(mutableSetOf())
     }
 
-private val VideoModel.tags: Set<LocationMetadata.ContentMetadata.Tag>
+private val VideoModel.tags: Set<Tag>
     get() {
         return categories
                 .filter { category -> category.name != null && category.url != null }
                 .filter { category -> !category.pornstar }
-                .map { category -> LocationMetadata.ContentMetadata.Tag(category.url!!, category.name!!) }
+                .map { category -> Tag(category.url!!, category.name!!) }
                 .toCollection(mutableSetOf())
     }
 

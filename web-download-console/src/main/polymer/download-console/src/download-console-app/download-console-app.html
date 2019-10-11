@@ -4,101 +4,103 @@
 <link rel="import" href="rate-item-view.html">
 
 <dom-module id="dowload-console-app">
-  <template>
-    <style>
-      :host {
-        display: block;
-      }
-    </style>
+	<template>
+		<style>
+			:host {
+				display: flex;
+			}
 
-	  <sse-client id="eventSource" url="[[apiUrl]]/events" on-message="_handleEvent"></sse-client>
+			.grid-container {
+				display: grid;
+				min-width: 100%;
+				min-height: 100%;
+				grid-template-columns: 1fr;
+				grid-template-rows: 20px 1fr 20px;
+				grid-template-areas: "head" "content" "footer";
+			}
 
-	  <iron-ajax
-			  id="updateRatingRequest"
-			  handle-as="json"
-			  method="put"
-			  content-type="application/json"
-	  ></iron-ajax>
+			.head {
+				display: grid;
+				grid-template-columns: 1fr;
+				grid-template-rows: 1fr;
+				grid-template-areas: ".";
+				grid-area: head;
+			}
 
-	  <iron-ajax
-			  id="playNextRequest"
-			  url="[[apiUrl]]/player/next"
-			  handle-as="json"
-			  method="get"
-			  content-type="application/json"
-	  ></iron-ajax>
+			.content { grid-area: content; }
+			.footer { grid-area: footer; }
+		</style>
 
-	  <iron-ajax
-			  auto
-			  id="getPlayingRequest"
-			  url="[[apiUrl]]/movies/playing"
-			  handle-as="json"
-			  method="get"
-			  content-type="application/json"
-			  last-response="{{currentMovie}}"
-	  ></iron-ajax>
+		<div class="grid-container">
 
+			<div class="grid-container">
+				<div class="head">download console</div>
+				<div class="content">
+					bla
+				</div>
+				<div class="footer">
+					bla
+				</div>
+			</div>
 
-	  <rate-item-view movie="{{currentMovie}}"
-	                  on-rating-changed="_handleRatingChanged"
-	                  on-skip="_handleSkip"
-	  ></rate-item-view>
-  </template>
+		</div>
 
-  <script>/**
-   * @customElement
-   * @polymer
-   */
-  class KodiRaterApp extends Polymer.Element {
-	  static get is() {
-		  return 'dowload-console-app';
-	  }
+	</template>
 
-	  static get properties() {
-		  return {
-			  currentMovie: {
-				  type: Object,
-				  value: null,
-                  notify: true
-			  },
-			  apiUrl: {
-				  type: String,
-				  value: function (){
-				  	const localStorageItem=localStorage.getItem("apiUrl")
-					  if(localStorageItem==null)
-					  	return ""
-					  return localStorageItem
-				  },
-				  notify: true
-			  }
-		  };
-	  }
+	<script>/**
+	 * @customElement
+	 * @polymer
+	 */
+	class DownloadConsoleApp extends Polymer.Element {
+		static get is() {
+			return 'dowload-console-app';
+		}
 
-	  connectedCallback() {
-		  super.connectedCallback()
-		  this.$.eventSource.connect()
-	  }
+		static get properties() {
+			return {
+				currentMovie: {
+					type: Object,
+					value: null,
+					notify: true
+				},
+				apiUrl: {
+					type: String,
+					value: function () {
+						const localStorageItem = localStorage.getItem("apiUrl")
+						if (localStorageItem == null)
+							return ""
+						return localStorageItem
+					},
+					notify: true
+				}
+			};
+		}
 
-	  disconnectedCallback() {
-		  super.disconnectedCallback()
-		  this.$.eventSource.close()
-	  }
+		connectedCallback() {
+			super.connectedCallback()
+			this.$.eventSource.connect()
+		}
 
-	  _handleEvent(data) {
-		  this.currentMovie=data.detail;
-	  }
+		disconnectedCallback() {
+			super.disconnectedCallback()
+			this.$.eventSource.close()
+		}
+
+		_handleEvent(data) {
+			this.currentMovie = data.detail;
+		}
 
 
-	  _handleRatingChanged(e) {
-		  this.$.updateRatingRequest.body=JSON.stringify(e.detail);
-		  this.$.updateRatingRequest.url=this.apiUrl+"/movies/"+this.currentMovie.movieid+"/rating"
-		  this.$.updateRatingRequest.generateRequest();
-	  }
+		_handleRatingChanged(e) {
+			this.$.updateRatingRequest.body = JSON.stringify(e.detail);
+			this.$.updateRatingRequest.url = this.apiUrl + "/movies/" + this.currentMovie.movieid + "/rating"
+			this.$.updateRatingRequest.generateRequest();
+		}
 
-	  _handleSkip(e){
-	  	this.$.playNextRequest.generateRequest()
-	  }
-  }
+		_handleSkip(e) {
+			this.$.playNextRequest.generateRequest()
+		}
+	}
 
-  window.customElements.define(KodiRaterApp.is, KodiRaterApp);</script>
+	window.customElements.define(DownloadConsoleApp.is, DownloadConsoleApp);</script>
 </dom-module>

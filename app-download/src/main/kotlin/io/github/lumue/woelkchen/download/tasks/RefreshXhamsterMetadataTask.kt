@@ -7,6 +7,8 @@ import io.github.lumue.woelkchen.download.LocationMetadataWriter
 import io.github.lumue.woelkchen.download.MediaLocation
 import io.github.lumue.woelkchen.download.sites.ph.PhHttpClient
 import io.github.lumue.woelkchen.download.sites.ph.PhResolver
+import io.github.lumue.woelkchen.download.sites.xh.XhHttpClient
+import io.github.lumue.woelkchen.download.sites.xh.XhResolver
 import io.github.lumue.woelkchen.download.sites.ydl.isPornhubInfoJson
 import io.github.lumue.woelkchen.download.sites.ydl.webpageUrl
 import kotlinx.coroutines.newFixedThreadPoolContext
@@ -19,7 +21,7 @@ import kotlin.coroutines.CoroutineContext
 
 private val objectMapper: ObjectMapper = ObjectMapper().registerModule(JavaTimeModule())
 
-private val resolver: PhResolver = PhResolver(PhHttpClient())
+private val resolver: XhResolver = XhResolver(XhHttpClient())
 
 private val locationMetadataWriter: LocationMetadataWriter = LocationMetadataWriter(objectMapper)
 
@@ -31,19 +33,19 @@ fun main(args: Array<String>) {
 
     val processFiles = ProcessFiles(
             context = threadpoolContext,
-            fileFilter = { it.isInfoJsonFile },
+            fileFilter = { it.isInfoJsonFile||it.isMetaJsonFile },
             handleFile = { refreshMetadata(it) }
     )
 
-    processFiles("/mnt/nasbox/media/adult")
+    processFiles("/mnt/debian-sdb/video/")
 }
 
 
-suspend fun refreshMetadata(infojsonfile: File) {
+suspend fun refreshMetadata(metadatafile: File) {
     try {
-        logger.debug("processing $infojsonfile")
-        val json = infojsonfile.asJsonNode()
-        val filename = infojsonfile.absolutePath.replace(".info.json", ".meta.json")
+        logger.debug("processing $metadatafile")
+        val json = metadatafile.asJsonNode()
+        val filename = metadatafile.absolutePath.replace(".info.json", ".meta.json")
         val metadata = resolver.retrieveMetadata(MediaLocation(json.webpageUrl.textValue()))
         logger.debug("writing $metadata to $filename")
         val out = FileOutputStream(filename)
@@ -52,10 +54,10 @@ suspend fun refreshMetadata(infojsonfile: File) {
     } catch (e: Throwable) {
         val message = e.message
         if (message != null && message.endsWith("410 Gone")) {
-                logger.warn("video zu ${infojsonfile.absolutePath} nicht mehr online verfügbar ")
+                logger.warn("video zu ${metadatafile.absolutePath} nicht mehr online verfügbar ")
         }
         else
-            logger.error("error processing ${infojsonfile.name}", e)
+            logger.error("error processing ${metadatafile.name}", e)
     }
 }
 
@@ -72,4 +74,12 @@ private val File.isInfoJsonFile: Boolean
                 && !this.isDirectory
                 && this.name.endsWith("info.json")
                 && asJsonNode().isPornhubInfoJson()
+    }
+
+
+private val File.isMetaJsonFile: Boolean
+    get() {
+        return this.exists()
+                && !this.isDirectory
+                && this.name.endsWith("meta.json")
     }

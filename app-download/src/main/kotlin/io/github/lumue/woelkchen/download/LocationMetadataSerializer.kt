@@ -2,24 +2,27 @@ package io.github.lumue.woelkchen.download
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
+import io.github.lumue.woelkchen.shared.metadata.MoviepageMetadata
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import java.io.*
 import java.nio.charset.Charset
 
 const val locationMetadataFileSuffix = ".meta.json"
 
-class LocationMetadataWriter(val mapper: ObjectMapper = ObjectMapper().registerModule(JavaTimeModule())) {
+class LocationMetadataWriter(private val mapper: ObjectMapper = ObjectMapper().registerModule(JavaTimeModule())) {
 
-    fun write(metadata: LocationMetadata, file:File) {
+    fun write(metadata: MoviepageMetadata, file:File) {
         val outStream=FileOutputStream(file)
-        mapper.writerWithDefaultPrettyPrinter().forType(LocationMetadata::class.java).writeValue(outStream, metadata)
+        mapper.writerWithDefaultPrettyPrinter().forType(MoviepageMetadata::class.java).writeValue(outStream, metadata)
         outStream.close()
     }
 
-    fun write(metadata: LocationMetadata, out: OutputStream) {
-        mapper.writerWithDefaultPrettyPrinter().forType(LocationMetadata::class.java).writeValue(out, metadata)
+    fun write(metadata: MoviepageMetadata, out: OutputStream) {
+        mapper.writerWithDefaultPrettyPrinter().forType(MoviepageMetadata::class.java).writeValue(out, metadata)
     }
 
-    fun writeString(metadata: LocationMetadata): String {
+    fun writeString(metadata: MoviepageMetadata): String {
         val out = ByteArrayOutputStream()
         write(metadata, out)
         return String(out.toByteArray(), Charset.defaultCharset())
@@ -28,9 +31,9 @@ class LocationMetadataWriter(val mapper: ObjectMapper = ObjectMapper().registerM
 
 class LocationMetadataReader(val mapper: ObjectMapper = ObjectMapper()) {
 
-    fun read(instream: InputStream): LocationMetadata {
+    fun read(instream: InputStream): MoviepageMetadata {
         try {
-            return mapper.readValue<LocationMetadata>(instream, LocationMetadata::class.java)
+            return mapper.readValue<MoviepageMetadata>(instream, MoviepageMetadata::class.java)
         }
         catch(t:Throwable){
             throw RuntimeException(t)
@@ -40,13 +43,21 @@ class LocationMetadataReader(val mapper: ObjectMapper = ObjectMapper()) {
 
 
 
-fun LocationMetadata.write(out: OutputStream) {
+fun MoviepageMetadata.write(out: OutputStream) {
     LocationMetadataWriter().write(this, out)
 }
 
+suspend fun MoviepageMetadata.writeToFile(filename:String) {
+    val out= withContext (Dispatchers.IO){
+        FileOutputStream(filename)
+    }
+    LocationMetadataWriter().write(this, out)
+    withContext(Dispatchers.IO) {
+        out.close()
+    }
+}
 
-
-fun LocationMetadata.jsonString(): String {
+fun MoviepageMetadata.jsonString(): String {
     return LocationMetadataWriter().writeString(this)
 }
 

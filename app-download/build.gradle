@@ -55,6 +55,7 @@ repositories {
 
 dependencies {
 
+	compile project(':lib-shared')
 	compile project(':web-download')
 
 	compile('org.springframework.boot:spring-boot-starter-web')

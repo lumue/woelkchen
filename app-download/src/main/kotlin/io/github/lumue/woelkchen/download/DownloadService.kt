@@ -7,6 +7,7 @@ import kotlinx.coroutines.async
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
+import java.net.URI
 import java.util.concurrent.TimeUnit
 
 @Service
@@ -15,7 +16,7 @@ class DownloadService {
 
     private val logger = LoggerFactory.getLogger(DownloadService::class.java)
 
-    private val clients: Map<String, SiteClient> = mapOf("xhamster" to XhSite(), "pornhub" to PhSite())
+    private val clients: Map<String, SiteClient> = mapOf("de.xhamster.com" to XhSite(), "pornhub" to PhSite())
 
     val executions: MutableMap<MediaLocation, DownloadExecution> = mutableMapOf()
 
@@ -34,7 +35,8 @@ class DownloadService {
 
 
     fun download(url: MediaLocation): DownloadExecution {
-        val client = clients[url.extractSiteKey()]!!
+        val siteKey = url.extractSiteKey()
+        val client = clients[siteKey]!!
         return scheduleDownload(url, client)
     }
 
@@ -68,7 +70,6 @@ class DownloadService {
 }
 
 private fun MediaLocation.extractSiteKey(): String {
-    if (url.contains("pornhub"))
-        return "pornhub"
-    return "xhamster"
+    val uri=URI(url)
+    return uri.host
 }

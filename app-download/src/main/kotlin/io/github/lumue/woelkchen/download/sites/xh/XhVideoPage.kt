@@ -109,14 +109,14 @@ data class XhVideoPage(
                         @JsonProperty("geo") val geo: Geo? = Geo(),
                         @JsonProperty("birthday") val birthday: Long = 0
                 ) {
-
+                    @JsonIgnoreProperties(ignoreUnknown = true)
                     data class Gender(
-                            @JsonProperty("name") val name: String = "",
-                            @JsonProperty("icon") val icon: String = "",
-                            @JsonProperty("label") val label: String = ""
+                            @JsonProperty("name") val name: String? = "",
+                            @JsonProperty("icon") val icon: String? = "",
+                            @JsonProperty("label") val label: String? = ""
                     )
 
-
+                    @JsonIgnoreProperties(ignoreUnknown = true)
                     data class Geo(
                             @JsonProperty("countryCode") val countryCode: String? = "",
                             @JsonProperty("countryName") val countryName: String? = ""
@@ -156,46 +156,46 @@ data class XhVideoPage(
             )
         }
 
-
+        @JsonIgnoreProperties(ignoreUnknown = true)
         data class UserComment(
-                @JsonProperty("lastActive") val lastActive: Int = 0,
-                @JsonProperty("editable") val editable: Boolean = false,
-                @JsonProperty("vip") val vip: Boolean = false,
-                @JsonProperty("personalInfo") val personalInfo: PersonalInfo = PersonalInfo(),
-                @JsonProperty("modelName") val modelName: String = "",
-                @JsonProperty("thumbURL") val thumbURL: String = "",
-                @JsonProperty("isOnline") val isOnline: Boolean = false,
-                @JsonProperty("id") val id: Int = 0,
-                @JsonProperty("pageURL") val pageURL: String = "",
-                @JsonProperty("retired") val retired: Boolean = false,
-                @JsonProperty("verified") val verified: Boolean = false,
-                @JsonProperty("name") val name: String = ""
+                @JsonProperty("lastActive") val lastActive: Int? = 0,
+                @JsonProperty("editable") val editable: Boolean? = false,
+                @JsonProperty("vip") val vip: Boolean? = false,
+                @JsonProperty("personalInfo") val personalInfo: PersonalInfo? = PersonalInfo(),
+                @JsonProperty("modelName") val modelName: String? = "",
+                @JsonProperty("thumbURL") val thumbURL: String? = "",
+                @JsonProperty("isOnline") val isOnline: Boolean? = false,
+                @JsonProperty("id") val id: Int? = 0,
+                @JsonProperty("pageURL") val pageURL: String? = "",
+                @JsonProperty("retired") val retired: Boolean? = false,
+                @JsonProperty("verified") val verified: Boolean? = false,
+                @JsonProperty("name") val name: String? = ""
         ) {
-
+            @JsonIgnoreProperties(ignoreUnknown = true)
             data class PersonalInfo(
-                    @JsonProperty("gender") val gender: Gender = Gender(),
-                    @JsonProperty("orientation") val orientation: Orientation = Orientation(),
-                    @JsonProperty("geo") val geo: Geo = Geo(),
-                    @JsonProperty("birthday") val birthday: Long = 0
+                    @JsonProperty("gender") val gender: Gender? = Gender(),
+                    @JsonProperty("orientation") val orientation: Orientation? = Orientation(),
+                    @JsonProperty("geo") val geo: Geo? = Geo(),
+                    @JsonProperty("birthday") val birthday: Long? = 0
             ) {
-
+                @JsonIgnoreProperties(ignoreUnknown = true)
                 data class Gender(
-                        @JsonProperty("name") val name: String = "",
-                        @JsonProperty("icon") val icon: String = "",
-                        @JsonProperty("label") val label: String = ""
+                        @JsonProperty("name") val name: String? = "",
+                        @JsonProperty("icon") val icon: String? = "",
+                        @JsonProperty("label") val label: String? = ""
                 )
 
-
+                @JsonIgnoreProperties(ignoreUnknown = true)
                 data class Geo(
-                        @JsonProperty("countryCode") val countryCode: String = "",
-                        @JsonProperty("countryName") val countryName: String = ""
+                        @JsonProperty("countryCode") val countryCode: String? = "",
+                        @JsonProperty("countryName") val countryName: String? = ""
                 )
 
-
+                @JsonIgnoreProperties(ignoreUnknown = true)
                 data class Orientation(
-                        @JsonProperty("name") val name: String = "",
-                        @JsonProperty("icon") val icon: String = "",
-                        @JsonProperty("label") val label: String = ""
+                        @JsonProperty("name") val name: String? = "",
+                        @JsonProperty("icon") val icon: String? = "",
+                        @JsonProperty("label") val label: String? = ""
                 )
             }
         }

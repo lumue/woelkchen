@@ -12,7 +12,7 @@ import java.io.FileOutputStream
 import java.time.LocalDateTime
 import java.util.concurrent.TimeUnit
 
-abstract class ResolveTestBase {
+abstract class ResolveTestBase : SiteClientTestBase(){
     protected abstract val urlList: List<String>
     private val logger = LoggerFactory.getLogger(this.javaClass.name)
     @Test
@@ -21,8 +21,7 @@ abstract class ResolveTestBase {
             val jobs: List<Job> = List(urlList.size) {
                 launch {
                     val l = MediaLocation(urlList[it], LocalDateTime.now())
-                    val metadata = resolver
-                            .retrieveMetadata(l)
+                    val metadata = siteClient.downloadMetadata(l)
                     logger.info(metadata.jsonString())
                 }
             }
@@ -30,19 +29,16 @@ abstract class ResolveTestBase {
         }
     }
 
-    protected abstract val resolver: ResolveMetadataStep
 }
 
 
-abstract class DownloadTestBase {
+abstract class DownloadTestBase : SiteClientTestBase() {
 
     protected abstract val urlList: List<String>
 
     private val logger = LoggerFactory.getLogger(this.javaClass.name)
 
     private val downloadPath = "./work/downloads"
-
-    protected abstract val resolver: ResolveMetadataStep
 
     @Before
     fun setup() {
@@ -72,8 +68,8 @@ abstract class DownloadTestBase {
             urlList
                     .forEach {
                         val l = MediaLocation(it, LocalDateTime.now())
-                        val metadata = resolver.retrieveMetadata(l)
-                        val downloadResult = downloader.downloadContent(metadata,
+                        val metadata = siteClient.downloadMetadata(l)
+                        val downloadResult = siteClient.downloadContent(metadata,
                                 downloadPath,
                                 progressHandler(metadata.contentMetadata.title)
                         )
@@ -85,7 +81,9 @@ abstract class DownloadTestBase {
         }
     }
 
-    protected abstract val downloader: DownloadFileStep
 
+}
 
+abstract class SiteClientTestBase {
+    abstract val siteClient: SiteClient
 }

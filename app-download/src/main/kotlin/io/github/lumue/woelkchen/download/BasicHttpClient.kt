@@ -1,5 +1,6 @@
 package io.github.lumue.woelkchen.download
 
+import io.github.lumue.woelkchen.shared.metadata.MoviepageMetadata
 import kotlinx.coroutines.*
 import org.apache.http.Header
 import org.apache.http.HttpStatus
@@ -85,7 +86,7 @@ open class BasicHttpClient(val password: String = "",
 
 
     @InternalCoroutinesApi
-    suspend fun download(m: LocationMetadata,
+    suspend fun download(m: MoviepageMetadata,
                          targetPath: String,
                          progressHandler: ((readBytes: Long, time: Long, totalBytes: Long) -> Unit)?): FileDownloadResult {
 

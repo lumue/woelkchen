@@ -1,7 +1,8 @@
 package io.github.lumue.woelkchen.download.sites.ydl
 
 import com.fasterxml.jackson.databind.JsonNode
-import io.github.lumue.woelkchen.download.LocationMetadata
+import io.github.lumue.woelkchen.shared.metadata.MovieMetadata
+import io.github.lumue.woelkchen.shared.metadata.MoviepageMetadata
 import io.github.lumue.ydlwrapper.metadata.single_info_json.Format
 import io.github.lumue.ydlwrapper.metadata.single_info_json.HttpHeaders
 import io.github.lumue.ydlwrapper.metadata.single_info_json.RequestedFormat
@@ -18,17 +19,15 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
-import java.time.format.FormatStyle
-import javax.swing.text.DateFormatter
 import kotlin.streams.toList
 
 const val infoJsonFileSuffix = ".info.json"
 
-fun YdlInfoJson.toLocationMetadata(): LocationMetadata {
-    return LocationMetadata(this.webpageUrl, this.toContentMetadata(), this.toDownloadMetadata())
+fun YdlInfoJson.toLocationMetadata(): MoviepageMetadata {
+    return MoviepageMetadata(this.webpageUrl, this.toContentMetadata(), this.toDownloadMetadata())
 }
 
-private fun YdlInfoJson.toDownloadMetadata(): LocationMetadata.DownloadMetadata {
+private fun YdlInfoJson.toDownloadMetadata(): MoviepageMetadata.DownloadMetadata {
     val availableStreams = this.formats
             .map { format -> format.toStreamMetadata() }
             .toMutableList()
@@ -44,23 +43,23 @@ private fun YdlInfoJson.toDownloadMetadata(): LocationMetadata.DownloadMetadata 
                         .map { fo->fo.toStreamMetadata() }
             ).toList()
 
-    return LocationMetadata.DownloadMetadata(selectedStreams,availableStreams)
+    return MoviepageMetadata.DownloadMetadata(selectedStreams,availableStreams)
 }
 
-private fun RequestedFormat.toStreamMetadata(): LocationMetadata.MediaStreamMetadata {
-    var type = LocationMetadata.ContentType.CONTAINER
+private fun RequestedFormat.toStreamMetadata(): MoviepageMetadata.MediaStreamMetadata {
+    var type = MoviepageMetadata.ContentType.CONTAINER
     var codec = this.ext
     if (!StringUtils.isEmpty(vcodec) && !StringUtils.isEmpty(acodec)) {
         if ("none" == acodec) {
-            type = LocationMetadata.ContentType.VIDEO
+            type = MoviepageMetadata.ContentType.VIDEO
             codec = vcodec
         } else if ("none" == vcodec) {
-            type = LocationMetadata.ContentType.AUDIO
+            type = MoviepageMetadata.ContentType.AUDIO
             codec = acodec
         }
     }
 
-    return LocationMetadata.MediaStreamMetadata(
+    return MoviepageMetadata.MediaStreamMetadata(
             this.formatId,
             this.url,
             this.httpHeaders.toMap(),
@@ -72,13 +71,14 @@ private fun RequestedFormat.toStreamMetadata(): LocationMetadata.MediaStreamMeta
 
 private val dateTimeFormatter = DateTimeFormatter.ofPattern("yyyyMMdd")
 
-private fun YdlInfoJson.toContentMetadata(): LocationMetadata.ContentMetadata {
-    return LocationMetadata.ContentMetadata(title, description,
+private fun YdlInfoJson.toContentMetadata(): MovieMetadata {
+    return MovieMetadata(title, description,
             downloaded = LocalDateTime.now(),
             uploaded = LocalDateTime.of(LocalDate.parse(this.uploadDate, dateTimeFormatter), LocalTime.MIDNIGHT),
             hoster = "",
             votes = 0,
-            duration = Duration.ofSeconds(this.duration.toLong()))
+            duration = Duration.ofSeconds(this.duration.toLong()),
+            resolution = this.resolution?.replace("p","")?.toShortOrNull())
 }
 
 private fun HttpHeaders.toMap(): Map<String, String> {
@@ -92,22 +92,22 @@ private fun HttpHeaders.toMap(): Map<String, String> {
     return map
 }
 
-private fun Format.toStreamMetadata(): LocationMetadata.MediaStreamMetadata {
+private fun Format.toStreamMetadata(): MoviepageMetadata.MediaStreamMetadata {
 
-    var type = LocationMetadata.ContentType.CONTAINER
+    var type = MoviepageMetadata.ContentType.CONTAINER
     var codec = this.ext
     if (!StringUtils.isEmpty(vcodec) && !StringUtils.isEmpty(acodec)) {
         if ("none" == acodec) {
-            type = LocationMetadata.ContentType.VIDEO
+            type = MoviepageMetadata.ContentType.VIDEO
             codec = vcodec
         } else if ("none" == vcodec) {
-            type = LocationMetadata.ContentType.AUDIO
+            type = MoviepageMetadata.ContentType.AUDIO
             codec = acodec
         }
     }
 
     val expectedSize = filesize?.toLong() ?: getFilesizeFromUrl(url)
-    return LocationMetadata.MediaStreamMetadata(
+    return MoviepageMetadata.MediaStreamMetadata(
             this.formatId,
             this.url,
             this.httpHeaders.toMap(),
@@ -158,7 +158,7 @@ fun JsonNode.isXhamsterInfoJson(): Boolean {
     if (!node.isTextual)
         return false
 
-    return node.textValue().contains("pornhub")
+    return node.textValue().contains("xhamster")
 }
 
 
@@ -172,5 +172,5 @@ fun JsonNode.isPornhubInfoJson(): Boolean {
 
  val JsonNode.webpageUrl: JsonNode
     get() {
-        return get("webpage_url")
+        return get("url")
     }

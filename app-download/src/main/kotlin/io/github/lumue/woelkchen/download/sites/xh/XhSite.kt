@@ -1,21 +1,24 @@
 package io.github.lumue.woelkchen.download.sites.xh
 
 import io.github.lumue.woelkchen.download.*
+import io.github.lumue.woelkchen.shared.metadata.MoviepageMetadata
 import java.io.File
-import java.io.FileOutputStream
 
-class XhSite:SiteClient {
+class XhSite(
+        val username: String = "",
+        val password: String = ""
+):SiteClient {
 
-    val httpClient: XhHttpClient = XhHttpClient("dirtytom74", "ddl85s")
+    private val httpClient: XhHttpClient = XhHttpClient(username, password)
 
-    val downloader: DownloadFileStep = BasicHttpDownload(httpClient)
-    val resolver: ResolveMetadataStep = XhResolver(httpClient)
+    private val downloader: DownloadFileStep = BasicHttpDownload(httpClient)
+    private val resolver: ResolveMetadataStep = XhResolver(httpClient)
 
-    override suspend fun downloadMetadata(l: MediaLocation): LocationMetadata {
+    override suspend fun downloadMetadata(l: MediaLocation): MoviepageMetadata {
         return resolver.retrieveMetadata(l)
     }
 
-    override suspend fun downloadContent(metadata: LocationMetadata, targetPath: String, progressHandler: ((readBytes: Long, time: Long, totalBytes: Long) -> Unit)?): FileDownloadResult {
+    override suspend fun downloadContent(metadata: MoviepageMetadata, targetPath: String, progressHandler: ((readBytes: Long, time: Long, totalBytes: Long) -> Unit)?): FileDownloadResult {
 
         val downloadResult = downloader.downloadContent(metadata,
                 targetPath,

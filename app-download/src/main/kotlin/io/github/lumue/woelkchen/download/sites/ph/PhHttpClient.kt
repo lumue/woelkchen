@@ -7,6 +7,9 @@ import org.slf4j.LoggerFactory
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.github.lumue.woelkchen.download.*
+import io.github.lumue.woelkchen.shared.metadata.MovieMetadata
+import io.github.lumue.woelkchen.shared.metadata.MoviepageMetadata
+import io.github.lumue.woelkchen.shared.metadata.Tag
 import java.io.File
 import javax.script.Invocable
 import javax.script.ScriptEngineManager
@@ -20,11 +23,11 @@ class PhSite : SiteClient{
     private val downloader: DownloadFileStep = BasicHttpDownload(httpClient)
     private val resolver: ResolveMetadataStep = PhResolver(httpClient)
 
-    override suspend fun downloadMetadata(l: MediaLocation): LocationMetadata {
+    override suspend fun downloadMetadata(l: MediaLocation): MoviepageMetadata {
         return resolver.retrieveMetadata(l)
     }
 
-    override suspend fun downloadContent(metadata: LocationMetadata,
+    override suspend fun downloadContent(metadata: MoviepageMetadata,
                                          targetPath: String,
                                          progressHandler: ((readBytes: Long, time: Long, totalBytes: Long) -> Unit)?)
             : FileDownloadResult {
@@ -56,14 +59,14 @@ class PhResolver(val httpClient: PhHttpClient) : ResolveMetadataStep {
 
     private val logger = LoggerFactory.getLogger(this.javaClass.name)
 
-    override suspend fun retrieveMetadata(l: MediaLocation): LocationMetadata {
+    override suspend fun retrieveMetadata(l: MediaLocation): MoviepageMetadata {
         logger.debug("resolving metadata for location $l")
         val pageDocument = loadVideoPageDocument(l)
         val page=PhVideoPage(pageDocument)
 
         val contentMetadata = page.contentMetadata
             val downloadMetadata = page.downloadMetadata
-            return LocationMetadata(
+            return MoviepageMetadata(
                     l.url,
                     contentMetadata,
                     downloadMetadata
@@ -159,7 +162,7 @@ class PhVideoPage(val document: Document){
 
 
 
-    val contentMetadata by lazy { document.extractContentMetadata() }
+    val contentMetadata by lazy { document.extractMovieMetadata() }
     val downloadMetadata by lazy { document.extractDownloadMetadata() }
 }
 
@@ -169,17 +172,17 @@ private val Document.pretty: String
         return html()
     }
 
-private fun Document.extractDownloadMetadata(): LocationMetadata.DownloadMetadata {
+private fun Document.extractDownloadMetadata(): MoviepageMetadata.DownloadMetadata {
     val playerJson=extractPlayerJson()
     val selected=playerJson.mediaDefinitions.filter { md->md.defaultQuality }
             .map {md->md.toMediaStreamMetaData()  }
     val additional=playerJson.mediaDefinitions.filter { md->!md.defaultQuality }
             .map { md->md.toMediaStreamMetaData() }
-    return LocationMetadata.DownloadMetadata(selected,additional)
+    return MoviepageMetadata.DownloadMetadata(selected,additional)
 }
 
-private fun PlayerJson.MediaDefinition.toMediaStreamMetaData(): LocationMetadata.MediaStreamMetadata {
-   return LocationMetadata.MediaStreamMetadata(quality,videoUrl, mapOf(), LocationMetadata.ContentType.CONTAINER,"mp4","mp4", 0)
+private fun PlayerJson.MediaDefinition.toMediaStreamMetaData(): MoviepageMetadata.MediaStreamMetadata {
+   return MoviepageMetadata.MediaStreamMetadata(quality,videoUrl, mapOf(), MoviepageMetadata.ContentType.CONTAINER,"mp4","mp4", 0)
 }
 
 private fun Document.extractPlayerJson(): PlayerJson {
@@ -200,27 +203,28 @@ private fun Document.extractPlayerJson(): PlayerJson {
 }
 
 
-private fun Document.extractContentMetadata(): LocationMetadata.ContentMetadata {
-    return LocationMetadata.ContentMetadata(
+private fun Document.extractMovieMetadata(): MovieMetadata {
+    return MovieMetadata(
             title = extractTitle(),
             description = extractDescription(),
             hoster = "pornhub",
             tags = extractTags(),
-            actors = extractActors()
+            actors = extractActors(),
+            resolution = 0
     )
 }
 
-private fun Document.extractActors(): Set<LocationMetadata.ContentMetadata.Actor> {
+private fun Document.extractActors(): Set<MovieMetadata.Actor> {
     val actors = select(".pornstarsWrapper").select("a")
-            .map { a -> LocationMetadata.ContentMetadata.Actor(a.attr("href").toString(), a.text()) }
+            .map { a -> MovieMetadata.Actor(a.attr("href").toString(), a.text()) }
     return actors.toMutableSet()
 }
 
-private fun Document.extractTags(): Set<LocationMetadata.ContentMetadata.Tag> {
+private fun Document.extractTags(): Set<Tag> {
     val categories = select(".categoriesWrapper").select("a")
-            .map { a -> LocationMetadata.ContentMetadata.Tag(a.attr("href").toString(), a.text()) }
+            .map { a -> Tag(a.attr("href").toString(), a.text()) }
     val tags=select(".tagsWrapper").select("a")
-            .map { a -> LocationMetadata.ContentMetadata.Tag(a.attr("href").toString(), a.text()) }
+            .map { a -> Tag(a.attr("href").toString(), a.text()) }
    return  (categories+tags).filter { t-> "" != t.id }.toMutableSet()
 }
 
